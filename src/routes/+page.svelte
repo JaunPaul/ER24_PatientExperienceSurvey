@@ -1,0 +1,154 @@
+<script lang="ts">
+	import { onMount } from 'svelte';
+	import RegistrationJSON from '$lib/survey/pes.json';
+	import SurveyTheme from '$lib/survey/survey_theme.json';
+	import { goto } from '$app/navigation';
+
+	let sending = false;
+	async function sendRegistration(sender, options) {
+		sending = true;
+		fetch('/', {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json; charset=utf-8'
+			},
+			body: JSON.stringify(sender.data)
+		})
+			.then((response) => {
+				if (response.ok) {
+					console.log(JSON.stringify(response.body));
+					options.showSaveSuccess();
+					//	goto('/thank-you/competition');
+					sending = false;
+				} else {
+					options.showSaveError();
+					sending = false;
+				}
+			})
+			.catch(() => {
+				options.showSaveError();
+				sending = false;
+			});
+	}
+	onMount(() => {
+		const script1 = document.createElement('script');
+		script1.src = 'https://unpkg.com/survey-core/survey.core.min.js';
+		script1.async = true;
+
+		const script2 = document.createElement('script');
+		script2.src = 'https://unpkg.com/survey-js-ui/survey-js-ui.min.js';
+		script2.async = true;
+
+		script1.onload = () => {
+			document.head.appendChild(script2);
+		};
+
+		script2.onload = () => {
+			const survey = new Survey.Model(RegistrationJSON);
+			//survey.onComplete.add(sendRegistration);
+
+			survey.render(document.getElementById('surveyContainer'));
+			survey.applyTheme(SurveyTheme);
+		};
+
+		document.head.appendChild(script1);
+	});
+</script>
+
+<div id="surveyContainer"></div>
+
+{#if sending}
+	<div class="mt-4 flex justify-center">
+		<div class="relative mx-auto inline-block p-4 text-center">
+			Please wait, you will be redirected ... <span class="relative top-2 ml-2 inline-flex"
+				><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+					><circle cx="12" cy="2" r="0" fill="#F97316"
+						><animate
+							attributeName="r"
+							begin="0"
+							calcMode="spline"
+							dur="1s"
+							keySplines="0.2 0.2 0.4 0.8;0.2 0.2 0.4 0.8;0.2 0.2 0.4 0.8"
+							repeatCount="indefinite"
+							values="0;2;0;0"
+						/></circle
+					><circle cx="12" cy="2" r="0" fill="#F97316" transform="rotate(45 12 12)"
+						><animate
+							attributeName="r"
+							begin="0.125s"
+							calcMode="spline"
+							dur="1s"
+							keySplines="0.2 0.2 0.4 0.8;0.2 0.2 0.4 0.8;0.2 0.2 0.4 0.8"
+							repeatCount="indefinite"
+							values="0;2;0;0"
+						/></circle
+					><circle cx="12" cy="2" r="0" fill="#F97316" transform="rotate(90 12 12)"
+						><animate
+							attributeName="r"
+							begin="0.25s"
+							calcMode="spline"
+							dur="1s"
+							keySplines="0.2 0.2 0.4 0.8;0.2 0.2 0.4 0.8;0.2 0.2 0.4 0.8"
+							repeatCount="indefinite"
+							values="0;2;0;0"
+						/></circle
+					><circle cx="12" cy="2" r="0" fill="#F97316" transform="rotate(135 12 12)"
+						><animate
+							attributeName="r"
+							begin="0.375s"
+							calcMode="spline"
+							dur="1s"
+							keySplines="0.2 0.2 0.4 0.8;0.2 0.2 0.4 0.8;0.2 0.2 0.4 0.8"
+							repeatCount="indefinite"
+							values="0;2;0;0"
+						/></circle
+					><circle cx="12" cy="2" r="0" fill="#F97316" transform="rotate(180 12 12)"
+						><animate
+							attributeName="r"
+							begin="0.5s"
+							calcMode="spline"
+							dur="1s"
+							keySplines="0.2 0.2 0.4 0.8;0.2 0.2 0.4 0.8;0.2 0.2 0.4 0.8"
+							repeatCount="indefinite"
+							values="0;2;0;0"
+						/></circle
+					><circle cx="12" cy="2" r="0" fill="#F97316" transform="rotate(225 12 12)"
+						><animate
+							attributeName="r"
+							begin="0.625s"
+							calcMode="spline"
+							dur="1s"
+							keySplines="0.2 0.2 0.4 0.8;0.2 0.2 0.4 0.8;0.2 0.2 0.4 0.8"
+							repeatCount="indefinite"
+							values="0;2;0;0"
+						/></circle
+					><circle cx="12" cy="2" r="0" fill="#F97316" transform="rotate(270 12 12)"
+						><animate
+							attributeName="r"
+							begin="0.75s"
+							calcMode="spline"
+							dur="1s"
+							keySplines="0.2 0.2 0.4 0.8;0.2 0.2 0.4 0.8;0.2 0.2 0.4 0.8"
+							repeatCount="indefinite"
+							values="0;2;0;0"
+						/></circle
+					><circle cx="12" cy="2" r="0" fill="#F97316" transform="rotate(315 12 12)"
+						><animate
+							attributeName="r"
+							begin="0.875s"
+							calcMode="spline"
+							dur="1s"
+							keySplines="0.2 0.2 0.4 0.8;0.2 0.2 0.4 0.8;0.2 0.2 0.4 0.8"
+							repeatCount="indefinite"
+							values="0;2;0;0"
+						/></circle
+					></svg
+				></span
+			>
+		</div>
+	</div>
+{/if}
+
+<style>
+	@import url('https://unpkg.com/survey-core/defaultV2.min.css');
+</style>
