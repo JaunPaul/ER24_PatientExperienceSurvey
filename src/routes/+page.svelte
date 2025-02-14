@@ -1,35 +1,42 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import RegistrationJSON from '$lib/survey/pes.json';
+	import PatientExperienceSurveyJSON from '$lib/survey/pes.json';
 	import SurveyTheme from '$lib/survey/survey_theme.json';
 	import { goto } from '$app/navigation';
 
 	let sending = false;
-	async function sendRegistration(sender, options) {
+	let loading = true;
+	const saveResponseToLocalStorage = (responseBody: string) => {
+		localStorage.setItem('registrationResponse', JSON.stringify(responseBody));
+	};
+
+	const sendRegistration = async (sender, options) => {
 		sending = true;
-		fetch('/', {
-			method: 'POST',
-			headers: {
-				'Content-Type': 'application/json; charset=utf-8'
-			},
-			body: JSON.stringify(sender.data)
-		})
-			.then((response) => {
-				if (response.ok) {
-					console.log(JSON.stringify(response.body));
-					options.showSaveSuccess();
-					//	goto('/thank-you/competition');
-					sending = false;
-				} else {
-					options.showSaveError();
-					sending = false;
-				}
-			})
-			.catch(() => {
-				options.showSaveError();
-				sending = false;
+		try {
+			const response = await fetch('/api/survey', {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json; charset=utf-8'
+				},
+				body: JSON.stringify(sender.data)
 			});
-	}
+
+			if (response.ok) {
+				const responseBody = await response.json();
+				console.log(JSON.stringify(responseBody));
+				saveResponseToLocalStorage(responseBody);
+				options.showSaveSuccess();
+				//goto('/thank-you/competition');
+			} else {
+				options.showSaveError();
+			}
+		} catch (error) {
+			options.showSaveError();
+		} finally {
+			sending = false;
+		}
+	};
+
 	onMount(() => {
 		const script1 = document.createElement('script');
 		script1.src = 'https://unpkg.com/survey-core/survey.core.min.js';
@@ -44,11 +51,12 @@
 		};
 
 		script2.onload = () => {
-			const survey = new Survey.Model(RegistrationJSON);
-			//survey.onComplete.add(sendRegistration);
+			const survey = new Survey.Model(PatientExperienceSurveyJSON);
+			survey.onComplete.add(sendRegistration);
 
 			survey.render(document.getElementById('surveyContainer'));
 			survey.applyTheme(SurveyTheme);
+			loading = false;
 		};
 
 		document.head.appendChild(script1);
