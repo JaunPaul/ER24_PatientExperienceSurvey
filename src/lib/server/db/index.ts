@@ -1,5 +1,5 @@
 import { drizzle } from 'drizzle-orm/postgres-js';
-import { eq } from 'drizzle-orm/expressions';
+import { eq, inArray } from 'drizzle-orm';
 import postgres from 'postgres';
 import { env } from '$env/dynamic/private';
 import { responses, answers, questions, questionsMap, dropdownOptions } from './schema';
@@ -11,216 +11,203 @@ if (!env.DATABASE_URL) throw new Error('DATABASE_URL is not set');
 const client = postgres(env.DATABASE_URL);
 const surveyJSON: SurveyJSJSONType = PatientExperienceSurveyJSON as SurveyJSJSONType;
 export const db = drizzle(client);
+const pool = db.$client;
 
 export abstract class PatientExperienceSurveyService {
+	// Cache for mapped questions
+	private static mappedQuestionsCache: Array<{
+		questionId: number;
+		questionName: string | null;
+	}> | null = null;
+
+	// Cache for dropdown options - Map<questionId, Map<optionText, optionId>>
+	private static dropdownOptionsCache: Map<number, Map<string, number>> = new Map();
+
 	static async createResponse(surveyId: number): Promise<number | null> {
 		try {
-			const newResponse = await db
-				.insert(responses)
-				.values({
-					surveyId
-				})
-				.returning();
-
-			// Assuming you want to return the first responseId from the array
-			return newResponse.length > 0 ? newResponse[0].responseId : null;
+			const [newResponse] = await db.insert(responses).values({ surveyId }).returning();
+			return newResponse?.responseId ?? null;
 		} catch (error) {
 			console.error('Error creating response:', error);
 			return null;
 		}
 	}
-	static async createAnswer(answerData: {
-		responseId: number;
-		questionId: number;
-		answerText?: string;
-		answerRating?: number;
-		answerBoolean?: boolean;
-		answerRadio?: string;
-		answerDropdown?: number;
-	}): Promise<number | null> {
-		try {
-			const newAnswer = await db.insert(answers).values(answerData).returning();
 
-			// Assuming you want to return the first answerId from the array
-			return newAnswer.length > 0 ? newAnswer[0].answerId : null;
-		} catch (error) {
-			console.error('Error creating answer:', error);
-			return null;
-		}
-	}
-	static async getQuestionIdByText(questionText: string): Promise<number | null> {
+	private static async loadDropdownOptionsForQuestions(questionIds: number[]): Promise<void> {
 		try {
-			const question = await db
+			// Fetch all dropdown options for the given question IDs in one query
+			const options = await db
 				.select({
-					questionId: questions.questionId
+					questionId: dropdownOptions.questionId,
+					optionId: dropdownOptions.optionId,
+					optionText: dropdownOptions.optionText,
+					selectionNumber: dropdownOptions.selectionNumber
 				})
-				.from(questions)
-				.where(eq(questions.questionText, questionText))
-				.limit(1);
+				.from(dropdownOptions)
+				.where(inArray(dropdownOptions.questionId, questionIds));
 
-			// Assuming you want to return the first questionId from the array
-			return question.length > 0 ? question[0].questionId : null;
+			// Organize into cache
+			options.forEach((option) => {
+				if (!this.dropdownOptionsCache.has(option.questionId)) {
+					this.dropdownOptionsCache.set(option.questionId, new Map());
+				}
+				// Store the optionId since that's what we need for the foreign key
+				this.dropdownOptionsCache.get(option.questionId)?.set(option.optionText, option.optionId);
+			});
 		} catch (error) {
-			console.error('Error fetching question ID:', error);
-			return null;
-		}
-	}
-	static async createQuestionMap(questionMapData: {
-		questionId: number;
-		questionName: string;
-	}): Promise<number | null> {
-		try {
-			const newQuestionMap = await db.insert(questionsMap).values(questionMapData).returning();
-
-			// Assuming you want to return the first questionId from the array
-			return newQuestionMap.length > 0 ? newQuestionMap[0].questionId : null;
-		} catch (error) {
-			console.error('Error creating question map:', error);
-			return null;
+			console.error('Error loading dropdown options:', error);
+			throw error; // Propagate error to handle it in the transaction
 		}
 	}
 
-	static async getMappedQuestionId(questionName: string): Promise<number | null> {
-		try {
-			const result = await db
-				.select({
-					questionId: questionsMap.questionId
-				})
-				.from(questionsMap)
-				.where(eq(questionsMap.questionName, questionName))
-				.limit(1);
-
-			return result.length > 0 ? result[0].questionId : null;
-		} catch (error) {
-			console.error('Error fetching mapped question ID:', error);
-			return null;
+	private static async getMappedQuestions(): Promise<
+		Array<{
+			questionId: number;
+			questionName: string | null;
+		}>
+	> {
+		if (!this.mappedQuestionsCache) {
+			try {
+				const result = await db.select().from(questionsMap);
+				this.mappedQuestionsCache = result;
+			} catch (error) {
+				console.error('Error fetching map:', error);
+				return [];
+			}
 		}
+		return this.mappedQuestionsCache ?? [];
 	}
 
-	static async getAllMappedQuestions(): Promise<Array<{
-		questionId: number;
-		questionName: string | null;
-	}> | null> {
-		try {
-			const result = await db.select().from(questionsMap);
-			return result.length > 0 ? result : null;
-		} catch (error) {
-			console.error('Error fetching map', error);
-			return null;
-		}
-	}
-
-	static mapQuestion(
+	private static mapQuestion(
 		mappedQuestions: Array<{
 			questionId: number;
 			questionName: string | null;
-		}> | null,
+		}>,
 		questionName: string
 	): number | null {
-		return mappedQuestions !== null
-			? mappedQuestions.filter((q) => q.questionName == questionName)[0].questionId
-			: null;
+		// Use Map for O(1) lookup instead of filter
+		const questionMap = new Map(mappedQuestions.map((q) => [q.questionName, q.questionId]));
+		return questionMap.get(questionName) ?? null;
 	}
 
-	static async processSurveyResponse(surveyResponse: SurveyResponse): Promise<void> {
+	static async processSurveyResponse(surveyResponse: SurveyResponse): Promise<number> {
 		const startTime = Date.now();
+		console.time('totalProcessing');
+
 		try {
-			const responseId = await this.createResponse(1);
+			return await db.transaction(async (tx) => {
+				console.time('responseCreation');
+				const responseId = await this.createResponse(1);
+				console.timeEnd('responseCreation');
 
-			if (!responseId) {
-				throw new Error('Failed to create response');
-			}
+				if (!responseId) {
+					throw new Error('Failed to create response');
+				}
 
-			const mappedQuestions = await this.getAllMappedQuestions();
-			console.log(mappedQuestions);
+				console.time('getMappedQuestions');
+				const mappedQuestions = await this.getMappedQuestions();
+				console.timeEnd('getMappedQuestions');
 
-			const answerPromises = [];
+				const answersToInsert: any[] = [];
+				const dropdownQuestionIds = new Set<number>();
 
-			for (const [key, value] of Object.entries(surveyResponse)) {
-				if (value !== undefined) {
+				// Process all answers
+				console.time('answerProcessing');
+				for (const [key, value] of Object.entries(surveyResponse)) {
+					if (value === undefined) continue;
+
 					const questionId = this.mapQuestion(mappedQuestions, key);
-					console.log(questionId);
-					if (questionId !== null) {
-						const question = surveyJSON.pages
-							.flatMap((page) => page.questions)
-							.find((q) => q.name === key);
-						if (question) {
-							const answerData: any = { responseId, questionId };
-
-							switch (question.type) {
-								case 'comment':
-									answerData.answerText = value;
-									break;
-								case 'rating':
-									answerData.answerRating = value;
-									break;
-								case 'boolean':
-									answerData.answerBoolean = value;
-									break;
-								case 'radiogroup':
-									answerData.answerRadio = value;
-									break;
-								case 'dropdown':
-									const dropdownSelectionNumber = await this.getDropdownSelectionNumberByQuestionId(
-										questionId,
-										value
-									);
-									answerData.answerDropdown = dropdownSelectionNumber;
-									break;
-								case 'matrix':
-									if (typeof value === 'object' && value !== null) {
-										for (const [matrixKey, matrixValue] of Object.entries(value)) {
-											const matrixAnswerData = {
-												...answerData,
-												answerText: matrixKey,
-												answerRating: matrixValue
-											};
-											console.log(`Creating matrix answer: ${JSON.stringify(matrixAnswerData)}`);
-											answerPromises.push(this.createAnswer(matrixAnswerData));
-										}
-										continue; // Skip the default createAnswer call
-									}
-									break;
-								case 'nps':
-									answerData.answerRating = value;
-									break;
-								default:
-									console.warn(`Unknown question type for key "${key}"`);
-							}
-
-							answerPromises.push(this.createAnswer(answerData));
-						} else {
-							console.warn(`No question found in survey JSON for key "${key}"`);
-						}
-					} else {
+					if (!questionId) {
 						console.warn(`No mapped question ID found for key "${key}"`);
+						continue;
+					}
+
+					const question = surveyJSON.pages
+						.flatMap((page) => page.questions)
+						.find((q) => q.name === key);
+
+					if (!question) {
+						console.warn(`No question found in survey JSON for key "${key}"`);
+						continue;
+					}
+
+					const baseAnswerData = { responseId, questionId };
+
+					if (question.type === 'dropdown') {
+						dropdownQuestionIds.add(questionId);
+						answersToInsert.push({
+							...baseAnswerData,
+							dropdownValue: value,
+							type: 'dropdown'
+						});
+						continue;
+					}
+
+					// Handle all other types with a lookup map
+					const answerMapping: Record<string, any> = {
+						comment: { answerText: value },
+						rating: { answerRating: value },
+						nps: { answerRating: value },
+						boolean: { answerBoolean: value },
+						radiogroup: { answerRadio: value },
+						matrix:
+							typeof value === 'object' && value !== null
+								? Object.entries(value).map(([matrixKey, matrixValue]) => ({
+										...baseAnswerData,
+										answerText: matrixKey,
+										answerRating: matrixValue
+									}))
+								: null
+					};
+
+					const mappedAnswer = answerMapping[question.type];
+					if (mappedAnswer) {
+						if (Array.isArray(mappedAnswer)) {
+							answersToInsert.push(...mappedAnswer);
+						} else {
+							answersToInsert.push({ ...baseAnswerData, ...mappedAnswer });
+						}
 					}
 				}
-			}
+				console.timeEnd('answerProcessing');
 
-			await Promise.all(answerPromises);
+				// Load dropdown options in bulk if needed
+				if (dropdownQuestionIds.size > 0) {
+					console.time('dropdownProcessing');
+					await this.loadDropdownOptionsForQuestions([...dropdownQuestionIds]);
 
-			const endTime = Date.now();
-			console.log('Response took', endTime - startTime, 'ms');
+					// Process dropdown answers using cache
+					answersToInsert.forEach((answer) => {
+						if (answer.type === 'dropdown') {
+							const optionsMap = this.dropdownOptionsCache.get(answer.questionId);
+							answer.answerDropdown = optionsMap?.get(answer.dropdownValue) ?? null;
+							delete answer.dropdownValue;
+							delete answer.type;
+						}
+					});
+					console.timeEnd('dropdownProcessing');
+				}
+
+				// Batch insert in chunks
+				console.time('batchInsert');
+				const CHUNK_SIZE = 1000;
+				for (let i = 0; i < answersToInsert.length; i += CHUNK_SIZE) {
+					const chunk = answersToInsert.slice(i, i + CHUNK_SIZE);
+					await tx.insert(answers).values(chunk);
+				}
+				console.timeEnd('batchInsert');
+
+				console.timeEnd('totalProcessing');
+				const endTime = Date.now();
+				console.log('Response processed successfully in', endTime - startTime, 'ms');
+				console.log('Total answers processed:', answersToInsert.length);
+				return responseId;
+			});
 		} catch (error) {
+			const endTime = Date.now();
 			console.error('Error processing survey response:', error);
-			const endTime = Date.now();
 			console.log('Response failed in', endTime - startTime, 'ms');
-		}
-	}
-	static async getDropdownSelectionNumberByQuestionId(
-		questionId: number,
-		optionText: string
-	): Promise<number | null> {
-		try {
-			const result = await db
-				.select()
-				.from(dropdownOptions)
-				.where(eq(dropdownOptions.questionId, questionId));
-			const selectionNumber = result.filter((i) => i.optionText == optionText);
-			return selectionNumber.length > 0 ? selectionNumber[0].questionId : null;
-		} catch (error) {
-			return null;
+			throw error;
 		}
 	}
 }
