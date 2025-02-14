@@ -5,8 +5,7 @@ import { PatientExperienceSurveyService } from '$lib/server/db';
 
 export const POST: RequestHandler = async ({ request }) => {
 	const surveyData: SurveyResponse = await request.json();
-	console.log(surveyData);
-	const surveyResponse = await PatientExperienceSurveyService.createResponse(1);
-	console.log(surveyResponse);
-	return json({ survey: surveyData, respondent: surveyResponse });
+	const surveyResponse = await PatientExperienceSurveyService.processSurveyResponse(surveyData);
+
+	return json({ survey: surveyData, result: surveyResponse });
 };

@@ -208,10 +208,9 @@
 					"title": "What areas need improvement?"
 				},
 				{
-					"type": "radiogroup",
+					"type": "boolean",
 					"name": "feelSafe",
-					"title": "Did you feel safe during your stay?",
-					"choices": ["Yes", "No"]
+					"title": "Did you feel safe during your stay?"
 				}
 			]
 		}
