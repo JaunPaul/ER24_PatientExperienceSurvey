@@ -3,6 +3,7 @@
 	import PatientExperienceSurveyJSON from '$lib/survey/pes.json';
 	import SurveyTheme from '$lib/survey/survey_theme.json';
 	import { goto } from '$app/navigation';
+	import type { SurveyResponse } from '$lib/shared/types/surveyResponseType';
 
 	let sending = false;
 	let loading = true;
@@ -26,6 +27,7 @@
 				console.log(JSON.stringify(responseBody));
 				saveResponseToLocalStorage(responseBody);
 				options.showSaveSuccess();
+				await sendNotifications(sender.data);
 				//goto('/thank-you/competition');
 			} else {
 				options.showSaveError();
@@ -35,6 +37,22 @@
 		} finally {
 			sending = false;
 		}
+	};
+
+	const sendNotifications = async (surveyData: SurveyResponse) => {
+		try {
+			const response = await fetch('/api/notification', {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json; charset=utf-8'
+				},
+				body: JSON.stringify(surveyData)
+			});
+			if (response.ok) {
+				const responseBody = await response.json();
+				console.log(JSON.stringify(responseBody));
+			}
+		} catch (error) {}
 	};
 
 	onMount(() => {
