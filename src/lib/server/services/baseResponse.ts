@@ -15,6 +15,7 @@ export interface SuccessType {
 	id?: number;
 	name?: string;
 	description?: string;
+	data?: any;
 	// Add other fields as needed
 }
 

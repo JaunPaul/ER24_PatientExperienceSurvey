@@ -40,6 +40,7 @@
 	};
 
 	const sendNotifications = async (surveyData: SurveyResponse) => {
+		console.log('sending notification');
 		try {
 			const response = await fetch('/api/notification', {
 				method: 'POST',
@@ -50,7 +51,7 @@
 			});
 			if (response.ok) {
 				const responseBody = await response.json();
-				console.log(JSON.stringify(responseBody));
+				console.log('notification sent', JSON.stringify(responseBody));
 			}
 		} catch (error) {}
 	};

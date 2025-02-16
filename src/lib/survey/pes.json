@@ -102,19 +102,19 @@
 					"type": "dropdown",
 					"name": "medicalStaffResponse",
 					"title": "Did medical staff respond promptly to your needs?",
-					"choices": ["Yes, always", "Yes, sometimes", "No"]
+					"choices": ["No", "Yes, sometimes", "Yes, always"]
 				},
 				{
 					"type": "radiogroup",
 					"name": "procedureExplanation",
 					"title": "Were procedures and treatments clearly explained?",
-					"choices": ["Very clear", "Somewhat clear", "Confusing", "Not explained"]
+					"choices": ["Not explained", "Confusing", "Somewhat clear", "Very clear"]
 				},
 				{
 					"type": "radiogroup",
 					"name": "staffCheck",
 					"title": "Did staff regularly check on you?",
-					"choices": ["Yes, frequently", "Occasionally", "Rarely", "Not at all"]
+					"choices": ["Not at all", "Rarely", "Occasionally", "Yes, frequently"]
 				},
 				{
 					"type": "radiogroup",
@@ -131,7 +131,7 @@
 					"type": "dropdown",
 					"name": "staffRespect",
 					"title": "Did staff treat you with respect and dignity?",
-					"choices": ["Yes, always", "Yes, sometimes", "No"]
+					"choices": ["No", "Yes, sometimes", "Yes, always"]
 				},
 				{
 					"type": "radiogroup",
@@ -144,11 +144,11 @@
 					"name": "staffAvailability",
 					"title": "Were staff available when needed?",
 					"choices": [
-						"Always available",
-						"Usually available",
-						"Sometimes available",
+						"Not available",
 						"Rarely available",
-						"Not available"
+						"Sometimes available",
+						"Usually available",
+						"Always available"
 					]
 				}
 			]
@@ -166,7 +166,7 @@
 					"type": "dropdown",
 					"name": "medicationInstructions",
 					"title": "Do you understand your medication instructions?",
-					"choices": ["Yes, completely", "Yes, somewhat", "No"]
+					"choices": ["No", "Yes, somewhat", "Yes, completely"]
 				},
 				{
 					"type": "radiogroup",
@@ -179,11 +179,11 @@
 					"name": "dischargeEfficiency",
 					"title": "Was the discharge process efficient?",
 					"choices": [
-						"Very efficient",
-						"Somewhat efficient",
-						"Neutral",
+						"Very inefficient",
 						"Somewhat inefficient",
-						"Very inefficient"
+						"Neutral",
+						"Somewhat efficient",
+						"Very efficient"
 					]
 				}
 			]

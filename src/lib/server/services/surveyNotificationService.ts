@@ -22,10 +22,11 @@ export class SurveyNotificationService {
 				},
 				body: JSON.stringify({ message })
 			});
-
+			const result = await response.json();
 			if (response.ok) {
 				return new BaseResponse<SuccessType>(true, 'Notification sent successfully', {
-					statusCode: response.status
+					statusCode: response.status,
+					data: result
 				});
 			} else {
 				const errorText = await response.text();
