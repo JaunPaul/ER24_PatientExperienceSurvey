@@ -14,6 +14,7 @@ export class SurveyNotificationService {
 	}
 
 	async sendNotification(message: string): Promise<BaseResponse<SuccessType | FailType>> {
+		console.log('sendNotification called with message:', message);
 		try {
 			const response = await fetch(this.webhookUrl, {
 				method: 'POST',
@@ -22,17 +23,22 @@ export class SurveyNotificationService {
 				},
 				body: JSON.stringify({ message })
 			});
+			console.log('Response received:', response);
 			const result = await response.json();
+			console.log('Response JSON parsed:', result);
 			if (response.ok) {
+				console.log('Notification sent successfully');
 				return new BaseResponse<SuccessType>(true, 'Notification sent successfully', {
 					statusCode: response.status,
 					data: result
 				});
 			} else {
 				const errorText = await response.text();
+				console.error('Failed to send notification:', errorText);
 				return new BaseResponse<FailType>(false, `Failed to send notification: ${errorText}`);
 			}
 		} catch (error: any) {
+			console.error('Error:', error.message);
 			return new BaseResponse<FailType>(false, `Error: ${error.message}`);
 		}
 	}
