@@ -13,7 +13,10 @@ export class SurveyNotificationService {
 		this.webhookUrl = PRIVATE_N8N_NOTIFICATION_WEBHOOK;
 	}
 
-	async sendNotification(message: string): Promise<BaseResponse<SuccessType | FailType>> {
+	async sendNotification(
+		message: string,
+		html?: string
+	): Promise<BaseResponse<SuccessType | FailType>> {
 		console.log('sendNotification called with message:', message);
 		try {
 			const response = await fetch(this.webhookUrl, {
@@ -21,7 +24,7 @@ export class SurveyNotificationService {
 				headers: {
 					'Content-Type': 'application/json'
 				},
-				body: JSON.stringify({ message })
+				body: JSON.stringify({ message, html })
 			});
 			console.log('Response received:', response);
 			const result = await response.json();
@@ -116,6 +119,12 @@ export class SurveyNotificationService {
 		});
 		markdownMessage += '\n';
 
-		return this.sendNotification(markdownMessage);
+		let htmlMessage = '<h2>Your survey received low responses to:</h2>';
+		mappedScores.forEach(({ question, answer }) => {
+			htmlMessage += `<p><strong>${question}</strong>: ${answer}</p>`;
+		});
+		htmlMessage += '<br>';
+
+		return this.sendNotification(markdownMessage, htmlMessage);
 	}
 }
