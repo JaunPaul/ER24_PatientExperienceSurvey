@@ -30,4 +30,5 @@ export interface SurveyResponse {
 	goodAspects?: string;
 	areasForImprovement?: string;
 	feelSafe?: string;
+	createdAt?: string;
 }

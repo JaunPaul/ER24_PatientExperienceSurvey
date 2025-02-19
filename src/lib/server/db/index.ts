@@ -23,9 +23,13 @@ export abstract class PatientExperienceSurveyService {
 	// Cache for dropdown options - Map<questionId, Map<optionText, optionId>>
 	private static dropdownOptionsCache: Map<number, Map<string, number>> = new Map();
 
-	static async createResponse(surveyId: number): Promise<number | null> {
+	static async createResponse(surveyId: number, submissionDate?: string): Promise<number | null> {
 		try {
-			const [newResponse] = await db.insert(responses).values({ surveyId }).returning();
+			const values: { surveyId: number; createdAt?: string } = { surveyId };
+			if (submissionDate) {
+				values['createdAt'] = submissionDate;
+			}
+			const [newResponse] = await db.insert(responses).values(values).returning();
 			return newResponse?.responseId ?? null;
 		} catch (error) {
 			console.error('Error creating response:', error);
@@ -97,7 +101,7 @@ export abstract class PatientExperienceSurveyService {
 		try {
 			return await db.transaction(async (tx) => {
 				console.time('responseCreation');
-				const responseId = await this.createResponse(1);
+				const responseId = await this.createResponse(1, surveyResponse.createdAt);
 				console.timeEnd('responseCreation');
 
 				if (!responseId) {
