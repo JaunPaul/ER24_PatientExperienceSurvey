@@ -13,14 +13,12 @@
 					"title": "How would you rate your overall experience at our facility?",
 					"isRequired": true,
 					"rateType": "smileys",
-					"rateCount": 10,
-					"rateMax": 10,
 					"displayMode": "buttons"
 				},
 				{
 					"type": "checkbox",
 					"name": "aspectContributionOverallRating",
-					"visibleIf": "{overallExperienceRating} <= 5",
+					"visibleIf": "{overallExperienceRating} <= 2",
 					"title": "What aspects contributed to your rating?",
 					"choices": [
 						{
@@ -238,14 +236,12 @@
 					"title": "How would you rate the quality of medical care from our doctors and nurses?",
 					"isRequired": true,
 					"rateType": "smileys",
-					"rateCount": 10,
-					"rateMax": 10,
 					"displayMode": "buttons"
 				},
 				{
 					"type": "panel",
 					"name": "medicalCarePanel",
-					"visibleIf": "{medicalCareRating} <= 6",
+					"visibleIf": "{medicalCareRating} <= 2",
 					"title": "Medical care",
 					"elements": [
 						{
@@ -319,14 +315,12 @@
 					"title": "How would you rate the attentiveness and professionalism of our staff?",
 					"isRequired": true,
 					"rateType": "smileys",
-					"rateCount": 10,
-					"rateMax": 10,
 					"displayMode": "buttons"
 				},
 				{
 					"type": "panel",
 					"name": "professionalismPanel",
-					"visibleIf": "{staffRating} <= 6",
+					"visibleIf": "{staffRating} <= 2",
 					"title": "Attentiveness and professionalism",
 					"elements": [
 						{
@@ -347,7 +341,7 @@
 				{
 					"type": "comment",
 					"name": "goodAspects",
-					"visibleIf": "{medicalCareRating} >= 9 and {overallExperienceRating} >= 9 and {staffRating} >= 9",
+					"visibleIf": "{medicalCareRating} >= 5 and {overallExperienceRating} >= 5 and {staffRating} >= 5",
 					"title": "What aspects of your care were particularly good?"
 				}
 			]
