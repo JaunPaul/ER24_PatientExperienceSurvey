@@ -4,7 +4,7 @@
 	"logoHeight": "80",
 	"pages": [
 		{
-			"name": "survey",
+			"name": "emergencyRooms24",
 			"title": "OVERALL EXPERIENCE",
 			"elements": [
 				{
@@ -22,19 +22,19 @@
 					"title": "What aspects contributed to your rating?",
 					"choices": [
 						{
-							"value": "admissionProcessAspect",
+							"value": "1",
 							"text": "Admission process"
 						},
 						{
-							"value": "facilityCleanlinessAspect",
+							"value": "2",
 							"text": "Facility cleanliness"
 						},
 						{
-							"value": "dischargeProcessAspect",
+							"value": "3",
 							"text": "Discharge process"
 						},
 						{
-							"value": "staffInteractionAspect",
+							"value": "4",
 							"text": "Staff interaction"
 						}
 					]
