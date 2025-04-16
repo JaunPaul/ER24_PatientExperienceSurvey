@@ -1,4 +1,4 @@
-import { pgTable, serial, varchar, timestamp, foreignKey, integer, text, index, uuid, boolean, unique, json, bigint, numeric, type AnyPgColumn, date, pgView } from "drizzle-orm/pg-core"
+import { pgTable, serial, varchar, timestamp, foreignKey, integer, text, index, uuid, boolean, unique, json, bigint, numeric, date, type AnyPgColumn, pgView } from "drizzle-orm/pg-core"
 import { sql } from "drizzle-orm"
 
 
@@ -819,6 +819,23 @@ export const dailyPatientReport = pgTable("daily_patient_report", {
 		}),
 ]);
 
+export const omnisolPatients = pgTable("omnisol_patients", {
+	id: serial().primaryKey().notNull(),
+	patientId: varchar("patient_id", { length: 20 }).notNull(),
+	name: varchar({ length: 100 }).notNull(),
+	lastname: varchar({ length: 100 }).notNull(),
+	email: varchar({ length: 255 }),
+	gender: varchar({ length: 10 }),
+	dob: date().notNull(),
+	ageGroup: varchar("age_group", { length: 50 }),
+	category: varchar({ length: 50 }),
+	patientStatus: varchar("patient_status", { length: 20 }),
+	phone: varchar({ length: 255 }),
+}, (table) => [
+	unique("omnisol_patients_patient_id_key").on(table.patientId),
+	unique("omnisol_patients_email_key").on(table.email),
+]);
+
 export const omnisolAddresses = pgTable("omnisol_addresses", {
 	id: serial().primaryKey().notNull(),
 	patientId: varchar("patient_id", { length: 20 }).notNull(),
@@ -834,29 +851,6 @@ export const omnisolAddresses = pgTable("omnisol_addresses", {
 			name: "omnisol_addresses_patient_id_fkey"
 		}),
 	unique("omnisol_addresses_patient_id_key").on(table.patientId),
-]);
-
-export const omnisolPatients = pgTable("omnisol_patients", {
-	id: serial().primaryKey().notNull(),
-	patientId: varchar("patient_id", { length: 20 }).notNull(),
-	name: varchar({ length: 100 }).notNull(),
-	lastname: varchar({ length: 100 }).notNull(),
-	email: varchar({ length: 255 }),
-	gender: varchar({ length: 10 }),
-	dob: date().notNull(),
-	ageGroup: varchar("age_group", { length: 50 }),
-	category: varchar({ length: 50 }),
-	patientStatus: varchar("patient_status", { length: 20 }),
-	addressId: integer("address_id"),
-}, (table) => [
-	foreignKey({
-			columns: [table.addressId],
-			foreignColumns: [omnisolAddresses.id],
-			name: "omnisol_patients_address_id_fkey"
-		}),
-	unique("omnisol_patients_patient_id_key").on(table.patientId),
-	unique("omnisol_patients_email_key").on(table.email),
-	unique("omnisol_patients_address_id_key").on(table.addressId),
 ]);
 
 export const omnisolVisitations = pgTable("omnisol_visitations", {
@@ -999,7 +993,7 @@ export const omnisolDiagnoses = pgTable("omnisol_diagnoses", {
 export const omnisolSurveysSent = pgTable("omnisol_surveys_sent", {
 	id: serial().primaryKey().notNull(),
 	patientId: varchar("patient_id", { length: 20 }).notNull(),
-	responseId: integer("response_id").notNull(),
+	responseId: integer("response_id"),
 	dateSent: timestamp("date_sent", { mode: 'string' }).default(sql`CURRENT_TIMESTAMP`),
 	methodSent: varchar("method_sent", { length: 50 }),
 	surveyUrl: text("survey_url"),
@@ -1020,53 +1014,18 @@ export const omnisolSurveysSent = pgTable("omnisol_surveys_sent", {
 		}),
 ]);
 
-export const omnisolPayment = pgTable("omnisol_payment", {
-	id: serial().primaryKey().notNull(),
-	dateCreated: timestamp("date_created", { withTimezone: true, mode: 'string' }),
-	dateUpdated: timestamp("date_updated", { withTimezone: true, mode: 'string' }),
-	method: varchar({ length: 255 }),
-	currency: varchar({ length: 255 }),
-	amount: numeric({ precision: 10, scale:  5 }),
-	status: varchar({ length: 255 }),
-});
-
 export const omnisolWebhookResponses = pgTable("omnisol_webhook_responses", {
 	id: uuid().primaryKey().notNull(),
 	dateCreated: timestamp("date_created", { withTimezone: true, mode: 'string' }),
 	requestJson: json("request_json"),
 });
 
-export const omnisolAddress = pgTable("omnisol_address", {
+export const omnisolWebhookErrors = pgTable("omnisol_webhook_errors", {
 	id: serial().primaryKey().notNull(),
 	dateCreated: timestamp("date_created", { withTimezone: true, mode: 'string' }),
-	dateUpdated: timestamp("date_updated", { withTimezone: true, mode: 'string' }),
-	line1: varchar({ length: 255 }),
-	line2: varchar({ length: 255 }),
-	city: varchar({ length: 255 }),
-	province: varchar({ length: 255 }),
-	postalcode: varchar({ length: 255 }),
+	webhookId: uuid("webhook_id"),
+	webhookError: json("webhook_error"),
 });
-
-export const omnisolPatient = pgTable("omnisol_patient", {
-	id: varchar({ length: 255 }).primaryKey().notNull(),
-	dateCreated: timestamp("date_created", { withTimezone: true, mode: 'string' }),
-	dateUpdated: timestamp("date_updated", { withTimezone: true, mode: 'string' }),
-	name: varchar({ length: 255 }),
-	lastname: varchar({ length: 255 }),
-	email: varchar({ length: 255 }),
-	gender: varchar({ length: 255 }),
-	dob: date(),
-	ageGroup: varchar("age_group", { length: 255 }),
-	address: integer(),
-	category: varchar({ length: 255 }),
-	patientStatus: varchar("patient_status", { length: 255 }),
-}, (table) => [
-	foreignKey({
-			columns: [table.address],
-			foreignColumns: [omnisolAddress.id],
-			name: "omnisol_patient_address_foreign"
-		}).onDelete("set null"),
-]);
 export const dailyCategoryAverages = pgView("daily_category_averages", {	surveyId: integer("survey_id"),
 	categoryId: integer("category_id"),
 	categoryName: varchar("category_name", { length: 255 }),

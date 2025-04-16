@@ -7,6 +7,8 @@
 
 	let sending = false;
 	let loading = true;
+	let { data } = $props();
+	$inspect(data);
 	const saveResponseToLocalStorage = (responseBody: string) => {
 		localStorage.setItem('registrationResponse', JSON.stringify(responseBody));
 	};
@@ -27,7 +29,7 @@
 				console.log(JSON.stringify(responseBody));
 				saveResponseToLocalStorage(responseBody);
 				options.showSaveSuccess();
-				await sendNotifications(sender.data);
+				//await sendNotifications(sender.data);
 				//goto('/thank-you/competition');
 			} else {
 				options.showSaveError();

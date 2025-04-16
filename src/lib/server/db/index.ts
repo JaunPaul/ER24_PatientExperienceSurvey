@@ -2,10 +2,18 @@ import { drizzle } from 'drizzle-orm/postgres-js';
 import { eq, inArray } from 'drizzle-orm';
 import postgres from 'postgres';
 import { env } from '$env/dynamic/private';
-import { responses, answers, questions, questionsMap, dropdownOptions } from './schema';
+import {
+	responses,
+	answers,
+	questions,
+	questionsMap,
+	dropdownOptions,
+	omnisolSurveysSent
+} from './schema';
 import PatientExperienceSurveyJSON from '$lib/survey/pes.json';
 import type { SurveyResponse } from '$lib/shared/types/surveyResponseType';
 import type { SurveyJSJSONType } from '$lib/shared/types/surveyJSJSONType';
+import type { NewSurveysSent } from './types';
 
 if (!env.DATABASE_URL) throw new Error('DATABASE_URL is not set');
 const client = postgres(env.DATABASE_URL);
@@ -101,7 +109,7 @@ export abstract class PatientExperienceSurveyService {
 		try {
 			return await db.transaction(async (tx) => {
 				console.time('responseCreation');
-				const responseId = await this.createResponse(1, surveyResponse.createdAt);
+				const responseId = await this.createResponse(3, surveyResponse.createdAt);
 				console.timeEnd('responseCreation');
 
 				if (!responseId) {
@@ -215,3 +223,35 @@ export abstract class PatientExperienceSurveyService {
 		}
 	}
 }
+
+class PatientExperienceSurveyRepository {
+	constructor(private db: typeof drizzle) {}
+	// Generic method to insert data into a table
+	async insert<T, D>(table: T, data: D) {
+		return await this.db.insert<T>(table).values(data).returning({ id: table.id });
+	}
+
+	// Generic method to fetch data from a table
+	async find(table: any, where: any, options: { orderBy?: any } = {}) {
+		let query = this.db.select().from(table).where(where);
+		if (options.orderBy) {
+			query = query.orderBy(options.orderBy);
+		}
+		return await query;
+	}
+
+	// Generic method to update data in a table
+	async update<T, D>(table: T, data: Partial<D>, where: any) {
+		return await this.db.update(table).set(data).where(where).returning();
+	}
+
+	async findSurveySent(where: any, options: { orderBy?: any } = {}) {
+		return await this.find(omnisolSurveysSent, where, options);
+	}
+
+	async updateSurveySent(data: Partial<NewSurveysSent>, where: any) {
+		return await this.update(omnisolSurveysSent, data, where);
+	}
+}
+
+export const repo = new PatientExperienceSurveyRepository(db);
