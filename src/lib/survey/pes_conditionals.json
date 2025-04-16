@@ -22,19 +22,19 @@
 					"title": "What aspects contributed to your rating?",
 					"choices": [
 						{
-							"value": "1",
+							"value": "admissionProcessAspect",
 							"text": "Admission process"
 						},
 						{
-							"value": "2",
+							"value": "facilityCleanlinessAspect",
 							"text": "Facility cleanliness"
 						},
 						{
-							"value": "3",
+							"value": "dischargeProcessAspect",
 							"text": "Discharge process"
 						},
 						{
-							"value": "4",
+							"value": "staffInteractionAspect",
 							"text": "Staff interaction"
 						}
 					]

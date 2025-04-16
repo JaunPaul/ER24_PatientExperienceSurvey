@@ -1,14 +1,4 @@
-export interface FacilityCleanliness {
-	rooms?: number;
-	bathrooms?: number;
-	commonAreas?: number;
-}
-
-interface BaseResponse {
-	createdAt?: string;
-}
-
-export interface SurveyResponse extends BaseResponse {
+export interface SurveyInterface {
 	overallExperienceRating?: number;
 	aspectContributionOverallRating?: Array<string>;
 	admissionEfficiency?: number;

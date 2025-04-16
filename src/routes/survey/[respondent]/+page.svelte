@@ -5,10 +5,10 @@
 	import { goto } from '$app/navigation';
 	import type { SurveyResponse } from '$lib/shared/types/surveyResponseType';
 
-	let sending = false;
-	let loading = true;
+	let sending = $state(false);
+	let loading = $state(true);
 	let { data } = $props();
-	$inspect(data);
+
 	const saveResponseToLocalStorage = (responseBody: string) => {
 		localStorage.setItem('registrationResponse', JSON.stringify(responseBody));
 	};
@@ -21,12 +21,12 @@
 				headers: {
 					'Content-Type': 'application/json; charset=utf-8'
 				},
-				body: JSON.stringify(sender.data)
+				body: JSON.stringify({ surveyData: sender.data, surveyId: 3 })
 			});
 
 			if (response.ok) {
 				const responseBody = await response.json();
-				console.log(JSON.stringify(responseBody));
+				console.log(responseBody);
 				saveResponseToLocalStorage(responseBody);
 				options.showSaveSuccess();
 				//await sendNotifications(sender.data);

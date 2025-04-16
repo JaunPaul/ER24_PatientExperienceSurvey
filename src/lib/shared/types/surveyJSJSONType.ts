@@ -1,83 +1,103 @@
-export type SurveyJSJSONType = {
+export interface SurveyJSJSONType {
 	title: string;
 	logo: string;
-	logoPosition: string;
+	logoHeight: string;
 	pages: Page[];
-	showNavigationButtons: string;
-	showProgressBar: string;
-	progressBarShowPageNumbers: boolean;
-	goNextPageAutomatic: boolean;
+	showPageTitles: boolean;
+	showProgressBar: boolean;
+	progressBarLocation: string;
+	autoAdvanceEnabled: boolean;
+	firstPageIsStartPage: boolean;
+	questionsOnPageMode: string;
 	widthMode: string;
-};
+}
 
-type Page = {
-	title: string;
-	questions: Question[];
-};
-
-type Question =
-	| RadioGroupQuestion
-	| DropdownQuestion
-	| RatingQuestion
-	| MatrixQuestion
-	| NPSQuestion
-	| CommentQuestion
-	| BooleanQuestion;
-
-type RadioGroupQuestion = {
-	type: 'radiogroup';
+export interface Page {
 	name: string;
 	title: string;
-	choices: string[];
-};
+	elements: Element[];
+}
 
-type DropdownQuestion = {
-	type: 'dropdown';
-	name: string;
-	title: string;
-	choices: string[];
-};
+export type Element =
+	| RatingElement
+	| CheckboxElement
+	| PanelElement
+	| CommentElement
+	| DropdownElement
+	| RadiogroupElement
+	| MatrixElement;
 
-type RatingQuestion = {
+export interface RatingElement {
 	type: 'rating';
 	name: string;
 	title: string;
-	rateValues: number[];
-};
+	isRequired?: boolean;
+	rateType?: string;
+	displayMode?: string;
+	autoGenerate?: boolean;
+	rateValues?: number[];
+	visibleIf?: string;
+}
 
-type MatrixQuestion = {
+export interface CheckboxElement {
+	type: 'checkbox';
+	name: string;
+	title: string;
+	visibleIf?: string;
+	choices: Choice[];
+}
+
+export interface PanelElement {
+	type: 'panel';
+	name: string;
+	title: string;
+	visibleIf?: string;
+	description?: string;
+	elements: Element[];
+}
+
+export interface CommentElement {
+	type: 'comment';
+	name: string;
+	title: string;
+	visibleIf?: string;
+}
+
+export interface Choice {
+	value: string;
+	text: string;
+}
+
+export interface DropdownElement {
+	type: 'dropdown';
+	name: string;
+	title: string;
+	visibleIf?: string;
+	choices: string[];
+}
+
+export interface RadiogroupElement {
+	type: 'radiogroup';
+	name: string;
+	title: string;
+	visibleIf?: string;
+	choices: string[];
+}
+
+export interface MatrixElement {
 	type: 'matrix';
 	name: string;
 	title: string;
 	columns: MatrixColumn[];
 	rows: MatrixRow[];
-};
+}
 
-type MatrixColumn = {
+export interface MatrixColumn {
 	value: number;
 	text: string;
-};
+}
 
-type MatrixRow = {
+export interface MatrixRow {
 	value: string;
 	text: string;
-};
-
-type NPSQuestion = {
-	type: 'nps';
-	name: string;
-	title: string;
-	isRequired: boolean;
-};
-
-type CommentQuestion = {
-	type: 'comment';
-	name: string;
-	title: string;
-};
-
-type BooleanQuestion = {
-	type: 'boolean';
-	name: string;
-	title: string;
-};
+}

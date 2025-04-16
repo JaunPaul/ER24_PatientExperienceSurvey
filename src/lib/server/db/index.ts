@@ -10,7 +10,7 @@ import {
 	dropdownOptions,
 	omnisolSurveysSent
 } from './schema';
-import PatientExperienceSurveyJSON from '$lib/survey/pes.json';
+import PatientExperienceSurveyJSON from '$lib/survey/pes_conditionals.json';
 import type { SurveyResponse } from '$lib/shared/types/surveyResponseType';
 import type { SurveyJSJSONType } from '$lib/shared/types/surveyJSJSONType';
 import type { NewSurveysSent } from './types';
@@ -72,7 +72,7 @@ export abstract class PatientExperienceSurveyService {
 		}
 	}
 
-	private static async getMappedQuestions(): Promise<
+	private static async getMappedQuestions(surveyId: number): Promise<
 		Array<{
 			questionId: number;
 			questionName: string | null;
@@ -80,13 +80,17 @@ export abstract class PatientExperienceSurveyService {
 	> {
 		if (!this.mappedQuestionsCache) {
 			try {
-				const result = await db.select().from(questionsMap);
+				const result = await db
+					.select()
+					.from(questionsMap)
+					.where(eq(questionsMap.surveyId, surveyId));
 				this.mappedQuestionsCache = result;
 			} catch (error) {
 				console.error('Error fetching map:', error);
 				return [];
 			}
 		}
+
 		return this.mappedQuestionsCache ?? [];
 	}
 
@@ -102,14 +106,17 @@ export abstract class PatientExperienceSurveyService {
 		return questionMap.get(questionName) ?? null;
 	}
 
-	static async processSurveyResponse(surveyResponse: SurveyResponse): Promise<number> {
+	static async processSurveyResponse(
+		surveyResponse: SurveyResponse,
+		surveyId: number
+	): Promise<number> {
 		const startTime = Date.now();
 		console.time('totalProcessing');
 
 		try {
 			return await db.transaction(async (tx) => {
 				console.time('responseCreation');
-				const responseId = await this.createResponse(3, surveyResponse.createdAt);
+				const responseId = await this.createResponse(surveyId, surveyResponse.createdAt);
 				console.timeEnd('responseCreation');
 
 				if (!responseId) {
@@ -117,7 +124,7 @@ export abstract class PatientExperienceSurveyService {
 				}
 
 				console.time('getMappedQuestions');
-				const mappedQuestions = await this.getMappedQuestions();
+				const mappedQuestions = await this.getMappedQuestions(surveyId);
 				console.timeEnd('getMappedQuestions');
 
 				const answersToInsert: any[] = [];
@@ -125,6 +132,7 @@ export abstract class PatientExperienceSurveyService {
 
 				// Process all answers
 				console.time('answerProcessing');
+
 				for (const [key, value] of Object.entries(surveyResponse)) {
 					if (value === undefined) continue;
 
@@ -134,8 +142,14 @@ export abstract class PatientExperienceSurveyService {
 						continue;
 					}
 
+					const flattenElements = (elements: any[]): any[] => {
+						return elements.flatMap((element) =>
+							element.elements ? [element, ...flattenElements(element.elements)] : element
+						);
+					};
+
 					const question = surveyJSON.pages
-						.flatMap((page) => page.questions)
+						.flatMap((page) => flattenElements(page.elements))
 						.find((q) => q.name === key);
 
 					if (!question) {
