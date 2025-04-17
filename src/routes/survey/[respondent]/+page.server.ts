@@ -1,12 +1,15 @@
 import { repo } from '$lib/server/db';
 import { omnisolSurveysSent } from '$lib/server/db/schema';
 import type { NewSurveysSent } from '$lib/server/db/types';
-import { eq } from 'drizzle-orm';
+import { eq, and } from 'drizzle-orm';
 import type { PageServerLoad } from './$types';
 
 export const load: PageServerLoad = async ({ params }) => {
 	const surveySent = await repo.findSurveySent(
-		eq(omnisolSurveysSent.patientId, params.respondent),
+		and(
+			eq(omnisolSurveysSent.completed, false),
+			eq(omnisolSurveysSent.patientId, params.respondent)
+		),
 		{ orderBy: omnisolSurveysSent.dateSent }
 	);
 
@@ -19,6 +22,6 @@ export const load: PageServerLoad = async ({ params }) => {
 	}
 
 	return {
-		pageData: surveySent
+		pageData: surveySent[0] ?? undefined
 	};
 };

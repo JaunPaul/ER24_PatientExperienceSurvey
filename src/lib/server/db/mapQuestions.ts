@@ -14,7 +14,6 @@ export async function mapQuestions() {
 								questionId,
 								questionName: name
 							});
-							console.log(`Mapped question "${title}" with ID ${questionId} to name "${name}"`);
 						} else {
 							console.warn(`No question ID found for title "${title}"`);
 						}
@@ -22,7 +21,6 @@ export async function mapQuestions() {
 				}
 			}
 		}
-		console.log('Mapping completed.');
 	} catch (error) {
 		console.error('Error mapping questions:', error);
 	}

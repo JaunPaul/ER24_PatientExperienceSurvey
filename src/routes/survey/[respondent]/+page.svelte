@@ -10,7 +10,7 @@
 	let { data } = $props();
 
 	const saveResponseToLocalStorage = (responseBody: string) => {
-		localStorage.setItem('registrationResponse', JSON.stringify(responseBody));
+		localStorage.setItem('registrationResponse', responseBody);
 	};
 
 	const sendRegistration = async (sender, options) => {
@@ -21,14 +21,15 @@
 				headers: {
 					'Content-Type': 'application/json; charset=utf-8'
 				},
-				body: JSON.stringify({ surveyData: sender.data, surveyId: 3 })
+				body: JSON.stringify({ surveyData: sender.data, surveyId: 3, surveySent: data.pageData })
 			});
 
 			if (response.ok) {
-				const responseBody = await response.json();
-				console.log(responseBody);
-				saveResponseToLocalStorage(responseBody);
+				const { survey, result } = await response.json();
+				console.log({ survey, result });
+				saveResponseToLocalStorage(JSON.stringify({ survey, result }));
 				options.showSaveSuccess();
+
 				//await sendNotifications(sender.data);
 				//goto('/thank-you/competition');
 			} else {
