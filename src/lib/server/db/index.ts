@@ -1,5 +1,5 @@
 import { drizzle } from 'drizzle-orm/postgres-js';
-import { eq, inArray } from 'drizzle-orm';
+import { and, eq, inArray } from 'drizzle-orm';
 import postgres from 'postgres';
 import { env } from '$env/dynamic/private';
 import {
@@ -8,12 +8,13 @@ import {
 	questions,
 	questionsMap,
 	dropdownOptions,
-	omnisolSurveysSent
+	omnisolSurveysSent,
+	omnisolPatients
 } from './schema';
 import PatientExperienceSurveyJSON from '$lib/survey/pes_conditionals.json';
 import type { SurveyResponse } from '$lib/shared/types/surveyResponseType';
 import type { SurveyJSJSONType } from '$lib/shared/types/surveyJSJSONType';
-import type { NewSurveysSent } from './types';
+import type { NewAnswers, NewSurveysSent } from './types';
 
 if (!env.DATABASE_URL) throw new Error('DATABASE_URL is not set');
 const client = postgres(env.DATABASE_URL);
@@ -242,7 +243,7 @@ class PatientExperienceSurveyRepository {
 	constructor(private db: typeof drizzle) {}
 	// Generic method to insert data into a table
 	async insert<T, D>(table: T, data: D) {
-		return await this.db.insert<T>(table).values(data).returning({ id: table.id });
+		return await this.db.insert<T>(table).values(data).returning();
 	}
 
 	// Generic method to fetch data from a table
@@ -265,6 +266,25 @@ class PatientExperienceSurveyRepository {
 
 	async updateSurveySent(data: Partial<NewSurveysSent>, where: any) {
 		return await this.update(omnisolSurveysSent, data, where);
+	}
+
+	async findPatient(where: any) {
+		return await this.find(omnisolPatients, where);
+	}
+
+	async findMappedQuestionBySurveyId(surveyId: number, questionName: string) {
+		return await this.find(
+			questionsMap,
+			and(eq(questionsMap.surveyId, surveyId), eq(questionsMap.questionName, questionName))
+		);
+	}
+
+	async findDropdownItemsByQuestionId(questionId: number) {
+		return await this.find(dropdownOptions, eq(dropdownOptions.questionId, questionId));
+	}
+
+	async insertAnswers(data: Partial<NewAnswers>) {
+		return await this.insert(answers, data);
 	}
 }
 

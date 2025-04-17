@@ -4,6 +4,7 @@
 	import SurveyTheme from '$lib/survey/survey_theme.json';
 	import { goto } from '$app/navigation';
 	import type { SurveyResponse } from '$lib/shared/types/surveyResponseType';
+	import { page } from '$app/state';
 
 	let sending = $state(false);
 	let loading = $state(true);
@@ -21,7 +22,12 @@
 				headers: {
 					'Content-Type': 'application/json; charset=utf-8'
 				},
-				body: JSON.stringify({ surveyData: sender.data, surveyId: 3, surveySent: data.pageData })
+				body: JSON.stringify({
+					surveyData: sender.data,
+					surveyId: 3,
+					surveySent: data.pageData,
+					...(page.params?.respondent && { patientId: page.params.respondent })
+				})
 			});
 
 			if (response.ok) {

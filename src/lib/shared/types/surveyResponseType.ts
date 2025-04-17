@@ -6,6 +6,8 @@ export interface FacilityCleanliness {
 
 interface BaseResponse {
 	createdAt?: string;
+	ageGroup?: string;
+	gender?: string;
 }
 
 export interface SurveyResponse extends BaseResponse {
