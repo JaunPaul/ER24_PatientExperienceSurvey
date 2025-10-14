@@ -1,0 +1,421 @@
+{
+  "title": "Patient Experience Questionnaire",
+  "logo": "data:image/png;base64,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",
+  "logoHeight": "80",
+  "pages": [
+    {
+      "name": "survey",
+      "title": "OVERALL EXPERIENCE",
+      "elements": [
+        {
+          "type": "rating",
+          "name": "overallExperienceRating",
+          "title": "How would you rate your overall experience at our facility?",
+          "isRequired": true,
+          "rateType": "smileys",
+          "displayMode": "buttons"
+        },
+        {
+          "type": "checkbox",
+          "name": "aspectContributionOverallRating",
+          "visibleIf": "{overallExperienceRating} notempty",
+          "title": "What aspects contributed to your rating?",
+          "description": "You can select more than one.",
+          "choices": [
+            {
+              "value": "admissionProcessAspect",
+              "text": "Admission process"
+            },
+            {
+              "value": "facilityCleanlinessAspect",
+              "text": "Facility cleanliness"
+            },
+            {
+              "value": "dischargeProcessAspect",
+              "text": "Discharge process"
+            },
+            {
+              "value": "staffInteractionAspect",
+              "text": "Staff interaction"
+            }
+          ]
+        },
+        {
+          "type": "panel",
+          "name": "admissionProcessPanel",
+          "visibleIf": "{aspectContributionOverallRating} contains 'admissionProcessAspect' and {aspectContributionOverallRating} <> ['admissionProcessAspect', 'facilityCleanlinessAspect', 'dischargeProcessAspect', 'staffInteractionAspect']",
+          "title": "Admission Process",
+          "elements": [
+            {
+              "type": "rating",
+              "name": "admissionEfficiency",
+              "title": "How efficient was the admission/registration process?",
+              "autoGenerate": false,
+              "rateValues": [
+                1,
+                2,
+                3,
+                4,
+                5
+              ]
+            },
+            {
+              "type": "rating",
+              "name": "admissionStaffHelpfulness",
+              "visibleIf": "{admissionEfficiency} notempty",
+              "title": "Were the admission staff helpful and courteous?",
+              "autoGenerate": false,
+              "rateValues": [
+                1,
+                2,
+                3,
+                4,
+                5
+              ]
+            },
+            {
+              "type": "radiogroup",
+              "name": "insurancePaymentInfo",
+              "visibleIf": "{admissionStaffHelpfulness} notempty",
+              "title": "Was insurance and payment information clearly explained?",
+              "choices": [
+                "Yes",
+                "No"
+              ]
+            },
+            {
+              "type": "dropdown",
+              "name": "waitingTime",
+              "visibleIf": "{insurancePaymentInfo} notempty",
+              "title": "How long did you wait before being attended to?",
+              "choices": [
+                "<5 minutes",
+                "5-10 minutes",
+                "10-20 minutes",
+                "More than 20 minutes"
+              ]
+            }
+          ]
+        },
+        {
+          "type": "panel",
+          "name": "dischageProcessPanel",
+          "visibleIf": "{aspectContributionOverallRating} contains 'dischargeProcessAspect' and {aspectContributionOverallRating} <> ['admissionProcessAspect', 'facilityCleanlinessAspect', 'dischargeProcessAspect', 'staffInteractionAspect']",
+          "title": "Discharge Process\n",
+          "elements": [
+            {
+              "type": "radiogroup",
+              "name": "dischargeInstructions",
+              "title": "Were discharge instructions clearly explained?",
+              "choices": [
+                "Not at all",
+                "Somewhat",
+                "Neutral",
+                "Mostly",
+                "Completely"
+              ]
+            },
+            {
+              "type": "dropdown",
+              "name": "medicationInstructions",
+              "visibleIf": "{dischargeInstructions} notempty",
+              "title": "Do you understand your medication instructions?",
+              "choices": [
+                "No",
+                "Yes, somewhat",
+                "Yes, completely"
+              ]
+            },
+            {
+              "type": "radiogroup",
+              "name": "followUpCare",
+              "visibleIf": "{medicationInstructions} notempty",
+              "title": "Was follow-up care explained thoroughly?",
+              "choices": [
+                "Not at all",
+                "Somewhat",
+                "Neutral",
+                "Mostly",
+                "Completely"
+              ]
+            },
+            {
+              "type": "radiogroup",
+              "name": "dischargeEfficiency",
+              "visibleIf": "{followUpCare} notempty",
+              "title": "Was the discharge process efficient?",
+              "choices": [
+                "Very inefficient",
+                "Somewhat inefficient",
+                "Neutral",
+                "Somewhat efficient",
+                "Very efficient"
+              ]
+            }
+          ]
+        },
+        {
+          "type": "panel",
+          "name": "facilityEnvironmentPanel",
+          "visibleIf": "{aspectContributionOverallRating} contains 'facilityCleanlinessAspect' and {aspectContributionOverallRating} <> ['admissionProcessAspect', 'facilityCleanlinessAspect', 'dischargeProcessAspect', 'staffInteractionAspect']",
+          "title": "Facility and Environment",
+          "elements": [
+            {
+              "type": "matrix",
+              "name": "facilityCleanliness",
+              "title": "How clean were the facilities (rooms, bathrooms, common areas)?",
+              "columns": [
+                {
+                  "value": 1,
+                  "text": "Very Dirty"
+                },
+                {
+                  "value": 2,
+                  "text": "Dirty"
+                },
+                {
+                  "value": 3,
+                  "text": "Neutral"
+                },
+                {
+                  "value": 4,
+                  "text": "Clean"
+                },
+                {
+                  "value": 5,
+                  "text": "Very Clean"
+                }
+              ],
+              "rows": [
+                {
+                  "value": "rooms",
+                  "text": "Rooms"
+                },
+                {
+                  "value": "bathrooms",
+                  "text": "Bathrooms"
+                },
+                {
+                  "value": "commonAreas",
+                  "text": "Common Areas"
+                }
+              ]
+            },
+            {
+              "type": "rating",
+              "name": "roomComfort",
+              "visibleIf": "{facilityCleanliness.bathrooms} notempty and {facilityCleanliness.commonAreas} notempty and {facilityCleanliness.rooms} notempty",
+              "title": "How would you rate the comfort of your room/ward?",
+              "autoGenerate": false,
+              "rateValues": [
+                1,
+                2,
+                3,
+                4,
+                5
+              ]
+            },
+            {
+              "type": "radiogroup",
+              "name": "noiseLevel",
+              "visibleIf": "{roomComfort} notempty",
+              "title": "Was the noise level acceptable?",
+              "choices": [
+                "Yes",
+                "No"
+              ]
+            }
+          ]
+        },
+        {
+          "type": "panel",
+          "name": "staffInteractionPanel",
+          "visibleIf": "{aspectContributionOverallRating} contains 'staffInteractionAspect' and {aspectContributionOverallRating} <> ['admissionProcessAspect', 'facilityCleanlinessAspect', 'dischargeProcessAspect', 'staffInteractionAspect']",
+          "title": "Staff Interaction",
+          "elements": [
+            {
+              "type": "dropdown",
+              "name": "staffRespect",
+              "title": "Did staff treat you with respect and dignity?",
+              "choices": [
+                "No",
+                "Yes, sometimes",
+                "Yes, always"
+              ]
+            },
+            {
+              "type": "radiogroup",
+              "name": "staffListen",
+              "visibleIf": "{staffRespect} notempty",
+              "title": "Did staff listen to your concerns?",
+              "choices": [
+                "Not at all",
+                "Somewhat",
+                "Neutral",
+                "Mostly",
+                "Completely"
+              ]
+            },
+            {
+              "type": "radiogroup",
+              "name": "staffAvailability",
+              "visibleIf": "{staffListen} notempty",
+              "title": "Were staff available when needed?",
+              "choices": [
+                "Not available",
+                "Rarely available",
+                "Sometimes available",
+                "Usually available",
+                "Always available"
+              ]
+            }
+          ]
+        },
+        {
+          "type": "panel",
+          "name": "areasNeedImprovementPanel",
+          "visibleIf": "{aspectContributionOverallRating} allof ['admissionProcessAspect', 'facilityCleanlinessAspect', 'dischargeProcessAspect', 'staffInteractionAspect']",
+          "title": "We are sorry you had a poor experience with us",
+          "description": "Please share your experience",
+          "elements": [
+            {
+              "type": "comment",
+              "name": "areasForImprovement",
+              "title": "What areas need improvement?"
+            }
+          ]
+        },
+        {
+          "type": "rating",
+          "name": "medicalCareRating",
+          "visibleIf": "{aspectContributionOverallRating} <> ['admissionProcessAspect', 'facilityCleanlinessAspect', 'dischargeProcessAspect', 'staffInteractionAspect']",
+          "title": "How would you rate the quality of medical care from our doctors and nurses?",
+          "isRequired": true,
+          "rateType": "smileys",
+          "displayMode": "buttons"
+        },
+        {
+          "type": "panel",
+          "name": "medicalCarePanel",
+          "visibleIf": "{medicalCareRating} notempty",
+          "title": "Medical care",
+          "elements": [
+            {
+              "type": "panel",
+              "name": "nursesPanel",
+              "title": "Nurses care",
+              "elements": [
+                {
+                  "type": "dropdown",
+                  "name": "nurseStaffResponse",
+                  "title": "Did nursing staff respond promptly to your needs?",
+                  "choices": [
+                    "No",
+                    "Yes, sometimes",
+                    "Yes, always"
+                  ]
+                },
+                {
+                  "type": "radiogroup",
+                  "name": "nurseCheck",
+                  "visibleIf": "{nurseStaffResponse} notempty",
+                  "title": "Did nurses regularly check on you?",
+                  "choices": [
+                    "Not at all",
+                    "Rarely",
+                    "Occasionally",
+                    "Yes, frequently"
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "panel",
+              "name": "doctorsPanel",
+              "title": "Doctors care",
+              "elements": [
+                {
+                  "type": "radiogroup",
+                  "name": "procedureExplanation",
+                  "title": "Were procedures and treatments clearly explained?",
+                  "choices": [
+                    "Not explained",
+                    "Confusing",
+                    "Somewhat clear",
+                    "Very clear"
+                  ]
+                },
+                {
+                  "type": "radiogroup",
+                  "name": "medicationExplanation",
+                  "visibleIf": "{procedureExplanation} notempty",
+                  "title": "Were medications explained clearly?",
+                  "choices": [
+                    "Very Poor",
+                    "Poor",
+                    "Neutral",
+                    "Good",
+                    "Excellent"
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "rating",
+          "name": "staffRating",
+          "visibleIf": "{aspectContributionOverallRating} <> ['admissionProcessAspect', 'facilityCleanlinessAspect', 'dischargeProcessAspect', 'staffInteractionAspect']",
+          "title": "How would you rate the attentiveness and professionalism of our staff?",
+          "isRequired": true,
+          "rateType": "smileys",
+          "displayMode": "buttons"
+        },
+        {
+          "type": "panel",
+          "name": "professionalismPanel",
+          "visibleIf": "{staffRating} notempty",
+          "title": "Attentiveness and professionalism",
+          "elements": [
+            {
+              "type": "radiogroup",
+              "name": "staffCheck",
+              "title": "Did staff regularly check on you?",
+              "choices": [
+                "Not at all",
+                "Rarely",
+                "Occasionally",
+                "Yes, frequently"
+              ]
+            },
+            {
+              "type": "dropdown",
+              "name": "medicalStaffResponse",
+              "visibleIf": "{staffCheck} notempty",
+              "title": "Did medical staff respond promptly to your needs?",
+              "choices": [
+                "No",
+                "Yes, sometimes",
+                "Yes, always"
+              ]
+            }
+          ]
+        },
+        {
+          "type": "comment",
+          "name": "goodAspects",
+          "visibleIf": "{medicalCareRating} notempty and {overallExperienceRating} notempty and {staffRating} notempty",
+          "title": "What aspects of your care were particularly good?"
+        }
+      ]
+    }
+  ],
+  "showPageTitles": false,
+  "showProgressBar": true,
+  "progressBarLocation": "bottom",
+  "autoAdvanceEnabled": true,
+  "firstPageIsStartPage": true,
+  "questionsOnPageMode": "singlePage",
+  "widthMode": "static",
+  "headerView": "advanced"
+}
