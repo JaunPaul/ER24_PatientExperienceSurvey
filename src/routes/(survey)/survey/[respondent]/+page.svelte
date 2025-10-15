@@ -1,14 +1,17 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import PatientExperienceSurveyJSON from '$lib/survey/pes.json';
+	import PatientExperienceSurveyJSON from '$lib/survey/pes_all_questions.json';
 	import SurveyTheme from '$lib/survey/survey_theme.json';
 	import { goto } from '$app/navigation';
 	import type { SurveyResponse } from '$lib/shared/types/surveyResponseType';
+	import { page } from '$app/state';
 
-	let sending = false;
-	let loading = true;
+	let sending = $state(false);
+	let loading = $state(true);
+	let { data } = $props();
+
 	const saveResponseToLocalStorage = (responseBody: string) => {
-		localStorage.setItem('registrationResponse', JSON.stringify(responseBody));
+		localStorage.setItem('registrationResponse', responseBody);
 	};
 
 	const sendRegistration = async (sender, options) => {
@@ -19,13 +22,18 @@
 				headers: {
 					'Content-Type': 'application/json; charset=utf-8'
 				},
-				body: JSON.stringify(sender.data)
+				body: JSON.stringify({
+					surveyData: sender.data,
+					surveyId: 3,
+					surveySent: data.pageData,
+					...(page.params?.respondent && { patientId: page.params.respondent })
+				})
 			});
 
 			if (response.ok) {
-				const responseBody = await response.json();
-				console.log(JSON.stringify(responseBody));
-				saveResponseToLocalStorage(responseBody);
+				const { survey, result } = await response.json();
+				console.log({ survey, result });
+				saveResponseToLocalStorage(JSON.stringify({ survey, result }));
 				options.showSaveSuccess();
 				await sendNotifications(sender.data);
 				//goto('/thank-you/competition');
