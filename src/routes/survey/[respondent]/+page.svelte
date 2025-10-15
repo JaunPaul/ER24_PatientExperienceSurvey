@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import PatientExperienceSurveyJSON from '$lib/survey/pes_conditionals.json';
+	import PatientExperienceSurveyJSON from '$lib/survey/pes_all_questions.json';
 	import SurveyTheme from '$lib/survey/survey_theme.json';
 	import { goto } from '$app/navigation';
 	import type { SurveyResponse } from '$lib/shared/types/surveyResponseType';
