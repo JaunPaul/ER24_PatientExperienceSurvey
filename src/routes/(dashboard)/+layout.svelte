@@ -17,8 +17,8 @@
 	const linksSidebar = {
 		reports: [
 			{ label: 'Patient experience survey', href: '/reports/pes', icon: ClipboardPlusIcon },
-			{ label: 'Visitations', href: '#', icon: HospitalIcon },
-			{ label: 'Omnisol events', href: '#', icon: WebhookIcon }
+			{ label: 'Visitations', href: '/reports/visitations', icon: HospitalIcon },
+			{ label: 'Omnisol events', href: '/reports/omnisol', icon: WebhookIcon }
 		]
 	};
 

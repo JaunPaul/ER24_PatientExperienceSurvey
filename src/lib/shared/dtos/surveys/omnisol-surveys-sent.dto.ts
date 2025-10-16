@@ -1,10 +1,9 @@
 import {
 	getSurveysDashboard,
-	SurveysRanges,
 	type DailySeriesRow,
-	type DateRangeInput,
 	type SurveySummary
 } from '$lib/server/services/omnisol-surveys-sent.service';
+import { SurveysRanges, type DateRangeInput } from '$lib/shared/utils/dateRangeManagement';
 export interface SurveySummaryAsPercentagesVM {
 	averageOpenMinutes: string | null; // null 44min
 	openRate: string; // 3.4%

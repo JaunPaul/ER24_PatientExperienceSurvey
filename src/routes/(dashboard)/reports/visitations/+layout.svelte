@@ -8,9 +8,8 @@
 	<AppBar class="backdrop-blur">
 		<AppBar.Toolbar class="grid-cols-[auto_1fr_auto]">
 			<AppBar.Lead>
-				<a href="/reports/pes/facility" class="btn preset-tonal">Facility</a>
-				<a href="/reports/pes/medical-care" class="btn preset-tonal">Medical care</a>
-				<a href="/reports/pes/staff" class="btn preset-tonal">Staff experience</a>
+				<a href="/reports/visitations" class="btn preset-tonal">Visitations</a>
+				<a href="/reports/visitations/payments" class="btn preset-tonal">Payments</a>
 			</AppBar.Lead>
 			<AppBar.Trail>
 				<DateRangeSelect

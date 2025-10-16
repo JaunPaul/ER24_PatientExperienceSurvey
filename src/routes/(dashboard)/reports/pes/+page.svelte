@@ -7,6 +7,10 @@
 </script>
 
 <h1 class="h2">Patient Experience Survey Summary</h1>
+<blockquote class="my-2 max-w-lg blockquote">
+	Note that ER24 does not have a Meta account and therefore is not sending Whatsapp survey requests.
+	Email requests will only go to patients with emails on record.
+</blockquote>
 
 {#snippet summaryCard(card: { label: string; value: string; detail?: string })}
 	<div

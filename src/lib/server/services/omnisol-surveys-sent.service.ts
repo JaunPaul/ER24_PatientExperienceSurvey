@@ -2,20 +2,10 @@
 import { and, gte, lte, sql } from 'drizzle-orm';
 import { db } from '$lib/server/db'; // adjust import to your project
 import { omnisolSurveysSent } from '$lib/server/db/schema'; // adjust path if needed
-
+import * as DateManager from '$lib/shared/utils/dateRangeManagement';
 // -----------------------------
 // Types
 // -----------------------------
-export type DateRangePreset =
-	| 'last_7_days'
-	| 'last_30_days'
-	| 'last_quarter'
-	| 'this_year'
-	| 'custom';
-
-export type DateRangeInput =
-	| { preset: Exclude<DateRangePreset, 'custom'> }
-	| { preset: 'custom'; start: Date; end: Date };
 
 export interface SurveySummary {
 	range: { start: Date; end: Date; label: string };
@@ -43,59 +33,8 @@ export interface SurveysDashboard {
 	dailySeries: DailySeriesRow[];
 }
 
-// -----------------------------
-// Date range helpers
-// -----------------------------
-function startOfToday(): Date {
-	const d = new Date();
-	d.setHours(0, 0, 0, 0);
-	return d;
-}
-
-function toIso(x: Date): string {
-	return x.toISOString(); // safe for timestamptz bindings
-}
-
 function rangePredicateISO(startISO: string, endISO: string) {
 	return and(gte(omnisolSurveysSent.dateSent, startISO), lte(omnisolSurveysSent.dateSent, endISO));
-}
-
-function startOfYear(date = new Date()): Date {
-	return new Date(date.getFullYear(), 0, 1, 0, 0, 0, 0);
-}
-
-function daysAgo(n: number): Date {
-	const d = startOfToday();
-	d.setDate(d.getDate() - (n - 1)); // include today as day 1
-	return d;
-}
-
-function startOfQuarter(date = new Date()): Date {
-	const q = Math.floor(date.getMonth() / 3); // 0..3
-	const startMonth = q * 3;
-	return new Date(date.getFullYear(), startMonth, 1, 0, 0, 0, 0);
-}
-
-function resolveRange(input: DateRangeInput): { start: Date; end: Date; label: string } {
-	const todayEnd = new Date(); // now
-	switch (input.preset) {
-		case 'last_7_days':
-			return { start: daysAgo(7), end: todayEnd, label: 'Last 7 days' };
-		case 'last_30_days':
-			return { start: daysAgo(30), end: todayEnd, label: 'Last 30 days' };
-		case 'last_quarter':
-			// If you prefer *previous* quarter strictly, adjust logic accordingly.
-			return { start: startOfQuarter(), end: todayEnd, label: 'This quarter to date' };
-		case 'this_year':
-			return { start: startOfYear(), end: todayEnd, label: 'This year to date' };
-		case 'custom':
-			return { start: input.start, end: input.end, label: 'Custom' };
-	}
-}
-
-// Common where-clause for date range on dateSent
-function rangePredicate(start: Date, end: Date) {
-	return and(gte(omnisolSurveysSent.dateSent, start), lte(omnisolSurveysSent.dateSent, end));
 }
 
 // -----------------------------
@@ -103,10 +42,12 @@ function rangePredicate(start: Date, end: Date) {
 // -----------------------------
 
 // 1) Summary stats
-export async function getSurveysSummary(rangeInput: DateRangeInput): Promise<SurveySummary> {
-	const range = resolveRange(rangeInput);
-	const startISO = toIso(range.start);
-	const endISO = toIso(range.end);
+export async function getSurveysSummary(
+	rangeInput: DateManager.DateRangeInput
+): Promise<SurveySummary> {
+	const range = DateManager.resolveRange(rangeInput);
+	const startISO = DateManager.toIso(range.start);
+	const endISO = DateManager.toIso(range.end);
 
 	// Using Postgres FILTER to keep logic database-side
 	const rows = await db
@@ -151,11 +92,11 @@ export async function getSurveysSummary(rangeInput: DateRangeInput): Promise<Sur
 
 // 2) Breakdown by method
 export async function getSurveysMethodBreakdown(
-	rangeInput: DateRangeInput
+	rangeInput: DateManager.DateRangeInput
 ): Promise<MethodBreakdownRow[]> {
-	const range = resolveRange(rangeInput);
-	const startISO = toIso(range.start);
-	const endISO = toIso(range.end);
+	const range = DateManager.resolveRange(rangeInput);
+	const startISO = DateManager.toIso(range.start);
+	const endISO = DateManager.toIso(range.end);
 
 	// Coalesce method for grouping; normalize blanks to 'unknown'
 	const rows = await db
@@ -175,10 +116,12 @@ export async function getSurveysMethodBreakdown(
 }
 
 // 3) Daily series for line chart
-export async function getSurveysDailySeries(rangeInput: DateRangeInput): Promise<DailySeriesRow[]> {
-	const range = resolveRange(rangeInput);
-	const startISO = toIso(range.start);
-	const endISO = toIso(range.end);
+export async function getSurveysDailySeries(
+	rangeInput: DateManager.DateRangeInput
+): Promise<DailySeriesRow[]> {
+	const range = DateManager.resolveRange(rangeInput);
+	const startISO = DateManager.toIso(range.start);
+	const endISO = DateManager.toIso(range.end);
 
 	const rows = await db
 		.select({
@@ -197,7 +140,9 @@ export async function getSurveysDailySeries(rangeInput: DateRangeInput): Promise
 }
 
 // 4) One-call dashboard aggregate
-export async function getSurveysDashboard(rangeInput: DateRangeInput): Promise<SurveysDashboard> {
+export async function getSurveysDashboard(
+	rangeInput: DateManager.DateRangeInput
+): Promise<SurveysDashboard> {
 	const [summary, methods, dailySeries] = await Promise.all([
 		getSurveysSummary(rangeInput),
 		getSurveysMethodBreakdown(rangeInput),
@@ -206,14 +151,3 @@ export async function getSurveysDashboard(rangeInput: DateRangeInput): Promise<S
 
 	return { summary, methods, dailySeries };
 }
-
-// -----------------------------
-// Optional convenience presets
-// -----------------------------
-export const SurveysRanges = {
-	last7Days: (): DateRangeInput => ({ preset: 'last_7_days' }),
-	last30Days: (): DateRangeInput => ({ preset: 'last_30_days' }),
-	thisQuarter: (): DateRangeInput => ({ preset: 'last_quarter' }),
-	thisYear: (): DateRangeInput => ({ preset: 'this_year' }),
-	custom: (start: Date, end: Date): DateRangeInput => ({ preset: 'custom', start, end })
-};
