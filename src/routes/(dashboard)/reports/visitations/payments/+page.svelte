@@ -12,7 +12,7 @@
 	The values here come from Omnisol events. They are triggered in two ways.
 </blockquote>
 
-<div class="mt-4 grid grid-cols-3 gap-3">
+<div class="mt-4 grid gap-3 md:grid-cols-3">
 	{#each data.vm.kpis as card}
 		<div class="col-span-1 row-span-2 grid">
 			<KpiCard data={card}></KpiCard>
@@ -20,7 +20,7 @@
 	{/each}
 </div>
 
-<div class="mt-4 grid grid-cols-2 gap-3">
+<div class="mt-4 grid gap-3 md:grid-cols-2">
 	{#each data.vm.groupedMethods as method}
 		<KpiCard
 			data={{

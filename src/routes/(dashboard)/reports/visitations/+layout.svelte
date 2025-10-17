@@ -6,8 +6,8 @@
 
 <header class="sticky">
 	<AppBar class="backdrop-blur">
-		<AppBar.Toolbar class="grid-cols-[auto_1fr_auto]">
-			<AppBar.Lead>
+		<AppBar.Toolbar class="md:grid-cols-[auto_1fr_auto]">
+			<AppBar.Lead class="space-y-2">
 				<a href="/reports/visitations" class="btn preset-tonal">Visitations</a>
 				<a href="/reports/visitations/payments" class="btn preset-tonal">Payments</a>
 			</AppBar.Lead>

@@ -6,8 +6,8 @@
 
 <header class="sticky">
 	<AppBar class="backdrop-blur">
-		<AppBar.Toolbar class="grid-cols-[auto_1fr_auto]">
-			<AppBar.Lead>
+		<AppBar.Toolbar class="md:grid-cols-[auto_1fr_auto]">
+			<AppBar.Lead class="space-y-2">
 				<a href="/reports/pes/facility" class="btn preset-tonal">Facility</a>
 				<a href="/reports/pes/medical-care" class="btn preset-tonal">Medical care</a>
 				<a href="/reports/pes/staff" class="btn preset-tonal">Staff experience</a>

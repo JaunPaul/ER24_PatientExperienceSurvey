@@ -23,7 +23,7 @@
 
 <h1 class="mt-4 h3">Demographics</h1>
 
-<div class="mt-2 grid gap-3 md:grid-cols-3">
+<div class="mt-2 flex flex-col gap-3 md:grid md:grid-cols-3">
 	<DognutChart
 		title="Gender"
 		chartLables={data.vm.visitations.demographics.gender.map((g) => g.key)}
@@ -47,7 +47,7 @@
 		dataLabel="Count"
 	></BarChart>
 
-	<div class="col-span-2">
+	<div class=" md:col-span-2">
 		<HorizontalBarChart
 			title="Age groups"
 			dataLabel="Volume"

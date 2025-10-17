@@ -2,9 +2,8 @@
 	import KpiCard from '$lib/components/KpiCard.svelte';
 	import LineChart from '$lib/components/LineChart.svelte';
 	import type { DailySeriesRow } from '$lib/server/services/omnisol-surveys-sent.service';
-	import type { PageProps } from './$types';
-	let { data }: PageProps = $props();
-	$inspect(data);
+
+	let { data } = $props();
 </script>
 
 <h1 class="h2">Patient Experience Survey Summary</h1>
@@ -13,9 +12,9 @@
 	Email requests will only go to patients with emails on record.
 </blockquote>
 
-<div class="mt-4 grid grid-cols-3 gap-3">
+<div class="mt-4 grid gap-3 md:grid-cols-3">
 	{#each data.vm.kpis.sections.methods as card}
-		<div class="col-span-1 row-span-2 grid">
+		<div class="grid md:col-span-1 md:row-span-2">
 			<KpiCard data={card}></KpiCard>
 		</div>
 	{/each}

@@ -17,7 +17,8 @@
 		if (canvas) {
 			chart = new Chart(canvas, {
 				type: 'bar',
-				data: []
+				data: [],
+				responsive: true
 			});
 		}
 	});

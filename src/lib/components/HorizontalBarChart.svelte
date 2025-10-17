@@ -46,12 +46,12 @@
 </script>
 
 <div
-	class="block divide-y divide-surface-200-800 overflow-hidden card border-[1px] border-surface-200-800 preset-filled-surface-100-900 card-hover"
+	class="min-h-lg block divide-y divide-surface-200-800 overflow-hidden card border-[1px] border-surface-200-800 preset-filled-surface-100-900 card-hover"
 >
 	<article class="space-y-4 p-4">
 		<div>
 			<h2 class="h6">{title}</h2>
 		</div>
-		<canvas bind:this={canvas} class="min-h-md h-full w-full"></canvas>
+		<canvas bind:this={canvas} class="min-h-lg h-full w-full"></canvas>
 	</article>
 </div>

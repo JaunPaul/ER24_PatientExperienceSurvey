@@ -37,7 +37,7 @@
 </script>
 
 <div
-	class="block divide-y divide-surface-200-800 overflow-hidden card border-[1px] border-surface-200-800 preset-filled-surface-100-900 card-hover"
+	class="min-h-md block divide-y divide-surface-200-800 overflow-hidden card border-[1px] border-surface-200-800 preset-filled-surface-100-900 card-hover"
 >
 	<article class="space-y-4 p-4">
 		<div>
