@@ -62,3 +62,15 @@ export const SurveysRanges = {
 	thisYear: (): DateRangeInput => ({ preset: 'this_year' }),
 	custom: (start: Date, end: Date): DateRangeInput => ({ preset: 'custom', start, end })
 };
+
+export function determineDateRange(range?: string | null): DateRangeInput {
+	switch (range) {
+		case 'last_7':
+			return SurveysRanges.last7Days();
+
+		case 'last_30':
+			return SurveysRanges.last30Days();
+		default:
+			return SurveysRanges.last7Days();
+	}
+}

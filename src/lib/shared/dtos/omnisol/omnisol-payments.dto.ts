@@ -6,6 +6,7 @@ import {
 	type PaymentsDashboard,
 	type PaymentsSummary
 } from '$lib/server/services/omnisol-payments.service';
+import type { KpiCard } from '$lib/shared/types/uiTypes';
 import { SurveysRanges, type DateRangeInput } from '$lib/shared/utils/dateRangeManagement';
 
 export interface MethodCurrencyGrouped {
@@ -20,8 +21,6 @@ export interface OmnisolPaymentsVM extends PaymentsDashboard {
 	kpis: KpiCard[];
 	groupedMethods: MethodCurrencyGrouped[];
 }
-
-type KpiCard = { label: string; value: string; detail?: string };
 
 export function buildPaymentSummaryCards(sum: PaymentsSummary): KpiCard[] {
 	const fmt = (n: number) => n.toLocaleString(undefined, { maximumFractionDigits: 2 });
