@@ -1,5 +1,7 @@
 import {
 	getPaymentsDashboard,
+	type DailyAmount,
+	type DailyAmountByCurrency,
 	type MethodCurrencyBreakdown,
 	type PaymentsDashboard,
 	type PaymentsSummary
@@ -23,10 +25,7 @@ type KpiCard = { label: string; value: string; detail?: string };
 
 export function buildPaymentSummaryCards(sum: PaymentsSummary): KpiCard[] {
 	const fmt = (n: number) => n.toLocaleString(undefined, { maximumFractionDigits: 2 });
-	const cards: KpiCard[] = [
-		{ label: 'Payments', value: fmt(sum.totalPayments) },
-		{ label: 'Pending', value: fmt(sum.pendingAmount), detail: `${sum.pendingCount} payments` }
-	];
+	const cards: KpiCard[] = [{ label: 'Payments', value: fmt(sum.totalPayments) }];
 
 	// Add one card per currency
 	sum.perCurrency.forEach((c) => {
@@ -69,9 +68,46 @@ export function groupMethodCurrency(rows: MethodCurrencyBreakdown[]): MethodCurr
 	return Array.from(byMethod.values()).sort((a, b) => b.total - a.total);
 }
 
+export function buildDailyStackedSeries(rows: DailyAmountByCurrency[]): {
+	labels: string[];
+	series: Array<{ name: string; data: number[] }>;
+	total: DailyAmount[];
+} {
+	// Collect sorted unique days & currencies
+	const daySet = new Set<string>();
+	const curSet = new Set<string>();
+	for (const r of rows) {
+		daySet.add(r.day);
+		curSet.add(r.currency);
+	}
+	const labels = Array.from(daySet).sort();
+	const currencies = Array.from(curSet).sort();
+
+	// Initialize matrix
+	const indexByDay = new Map(labels.map((d, i) => [d, i]));
+	const dataByCurrency: Record<string, number[]> = {};
+	for (const c of currencies) dataByCurrency[c] = Array(labels.length).fill(0);
+
+	// Fill matrix
+	for (const r of rows) {
+		const di = indexByDay.get(r.day)!;
+		dataByCurrency[r.currency][di] += r.amount;
+	}
+
+	// Assemble series & total
+	const series = currencies.map((c) => ({ name: c, data: dataByCurrency[c] }));
+	const total: DailyAmount[] = labels.map((day, i) => ({
+		day,
+		amount: currencies.reduce((sum, c) => sum + dataByCurrency[c][i], 0)
+	}));
+
+	return { labels, series, total };
+}
+
 export async function toOmnsiolPaymentsVM(range: DateRangeInput = defaultRange) {
 	const payments = await getPaymentsDashboard(range);
 	const kpis = buildPaymentSummaryCards(payments.summary);
 	const groupedMethods = groupMethodCurrency(payments.byMethodCurrency);
-	return { payments };
+	const stackedSeries = buildDailyStackedSeries(payments.dailyAmount);
+	return { payments, kpis, groupedMethods, stackedSeries };
 }

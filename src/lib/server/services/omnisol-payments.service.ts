@@ -38,7 +38,10 @@ export interface GroupAmount {
 	total: number;
 	count?: number;
 }
-
+export interface DailyAmount {
+	day: string;
+	amount: number;
+}
 export interface DailyAmountByCurrency {
 	day: string;
 	currency: string;
