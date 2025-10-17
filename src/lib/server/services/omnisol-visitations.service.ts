@@ -130,19 +130,39 @@ export async function getVisitationsByDoctor(rangeInput: DateRangeInput): Promis
 }
 
 // Daily series
+// Daily (or Monthly) series depending on preset
 export async function getVisitationsDailySeries(rangeInput: DateRangeInput): Promise<DailyCount[]> {
 	const { start, end } = resolveRange(rangeInput);
 	const sISO = toIso(start),
 		eISO = toIso(end);
 
-	const rows = await db.execute<{ day: string; count: number }>(sql`
-    SELECT to_char(date_trunc('day', ${omnisolVisitations.timestamp}::timestamptz), 'YYYY-MM-DD') AS day,
-           count(*)::int AS count
-    FROM ${omnisolVisitations}
-    WHERE ${whereVisitationsInRange(sISO, eISO)}
-    GROUP BY 1 ORDER BY 1 ASC
-  `);
-	return rows;
+	const isMonthly =
+		'preset' in rangeInput &&
+		(rangeInput.preset === 'last_quarter' || rangeInput.preset === 'this_year');
+
+	if (isMonthly) {
+		// Monthly aggregation: label as YYYY-MM
+		const rows = await db.execute<{ day: string; count: number }>(sql`
+      SELECT to_char(date_trunc('month', ${omnisolVisitations.timestamp}::timestamptz), 'YYYY-MM') AS day,
+             count(*)::int AS count
+      FROM ${omnisolVisitations}
+      WHERE ${whereVisitationsInRange(sISO, eISO)}
+      GROUP BY 1
+      ORDER BY 1 ASC
+    `);
+		return rows; // e.g., [{ day: "2025-08", count: 123 }, ...]
+	} else {
+		// Daily aggregation: label as YYYY-MM-DD
+		const rows = await db.execute<{ day: string; count: number }>(sql`
+      SELECT to_char(date_trunc('day', ${omnisolVisitations.timestamp}::timestamptz), 'YYYY-MM-DD') AS day,
+             count(*)::int AS count
+      FROM ${omnisolVisitations}
+      WHERE ${whereVisitationsInRange(sISO, eISO)}
+      GROUP BY 1
+      ORDER BY 1 ASC
+    `);
+		return rows; // e.g., [{ day: "2025-10-14", count: 33 }, ...]
+	}
 }
 
 // Demographics

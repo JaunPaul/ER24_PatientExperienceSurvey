@@ -14,8 +14,11 @@
 			<AppBar.Trail>
 				<DateRangeSelect
 					options={[
+						{ value: 'today', label: 'Today' },
 						{ value: 'last_7', label: 'Last 7 days' },
-						{ value: 'last_30', label: 'Last 30 days' }
+						{ value: 'last_30', label: 'Last 30 days' },
+						{ value: 'this_q', label: 'This quarter' },
+						{ value: 'this_y', label: 'This year' }
 					]}
 				></DateRangeSelect>
 			</AppBar.Trail>

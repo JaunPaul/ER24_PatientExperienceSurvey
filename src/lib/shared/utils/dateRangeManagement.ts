@@ -67,10 +67,15 @@ export function determineDateRange(range?: string | null): DateRangeInput {
 	switch (range) {
 		case 'last_7':
 			return SurveysRanges.last7Days();
-
 		case 'last_30':
 			return SurveysRanges.last30Days();
+		case 'this_q':
+			return SurveysRanges.thisQuarter();
+		case 'this_y':
+			return SurveysRanges.thisYear();
+		case 'today':
+			return SurveysRanges.custom(new Date(Date.now() - 24 * 60 * 60 * 1000), new Date(Date.now()));
 		default:
-			return SurveysRanges.last7Days();
+			return SurveysRanges.custom(new Date(Date.now() - 24 * 60 * 60 * 1000), new Date(Date.now()));
 	}
 }

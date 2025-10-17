@@ -213,22 +213,47 @@ export async function getPaymentsDailyAmountByCurrency(
 	const sISO = toIso(start),
 		eISO = toIso(end);
 
-	const rows = await db.execute<{ day: string; currency: string; amount: string | null }>(sql`
-    SELECT
-      to_char(date_trunc('day', ${omnisolVisitations.timestamp}::timestamptz), 'YYYY-MM-DD') AS day,
-      coalesce(nullif(trim(${omnisolPayments.currency}), ''), 'Unknown') AS currency,
-      sum(coalesce(${omnisolPayments.amount}, 0)::numeric) AS amount
-    ${joinPaymentsVisitations}
-    WHERE ${whereByVisitationTimestamp(sISO, eISO)}
-    GROUP BY 1, 2
-    ORDER BY 1 ASC, 2 ASC
-  `);
+	const isMonthly =
+		'preset' in rangeInput &&
+		(rangeInput.preset === 'last_quarter' || rangeInput.preset === 'this_year');
 
-	return rows.map((r) => ({
-		day: r.day,
-		currency: r.currency,
-		amount: r.amount ? Number(r.amount) : 0
-	}));
+	if (isMonthly) {
+		// Group by month → labels like "YYYY-MM"
+		const rows = await db.execute<{ day: string; currency: string; amount: string | null }>(sql`
+      SELECT
+        to_char(date_trunc('month', ${omnisolVisitations.timestamp}::timestamptz), 'YYYY-MM') AS day,
+        coalesce(nullif(trim(${omnisolPayments.currency}), ''), 'Unknown') AS currency,
+        sum(coalesce(${omnisolPayments.amount}, 0)::numeric) AS amount
+      ${joinPaymentsVisitations}
+      WHERE ${whereByVisitationTimestamp(sISO, eISO)}
+      GROUP BY 1, 2
+      ORDER BY 1 ASC, 2 ASC
+    `);
+
+		return rows.map((r) => ({
+			day: r.day,
+			currency: r.currency,
+			amount: r.amount ? Number(r.amount) : 0
+		}));
+	} else {
+		// Group by day → labels like "YYYY-MM-DD"
+		const rows = await db.execute<{ day: string; currency: string; amount: string | null }>(sql`
+      SELECT
+        to_char(date_trunc('day', ${omnisolVisitations.timestamp}::timestamptz), 'YYYY-MM-DD') AS day,
+        coalesce(nullif(trim(${omnisolPayments.currency}), ''), 'Unknown') AS currency,
+        sum(coalesce(${omnisolPayments.amount}, 0)::numeric) AS amount
+      ${joinPaymentsVisitations}
+      WHERE ${whereByVisitationTimestamp(sISO, eISO)}
+      GROUP BY 1, 2
+      ORDER BY 1 ASC, 2 ASC
+    `);
+
+		return rows.map((r) => ({
+			day: r.day,
+			currency: r.currency,
+			amount: r.amount ? Number(r.amount) : 0
+		}));
+	}
 }
 
 // One-call dashboard

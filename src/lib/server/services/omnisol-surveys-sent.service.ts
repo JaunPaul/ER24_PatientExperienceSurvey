@@ -123,6 +123,26 @@ export async function getSurveysDailySeries(
 	const startISO = DateManager.toIso(range.start);
 	const endISO = DateManager.toIso(range.end);
 
+	const isMonthly =
+		'preset' in rangeInput &&
+		(rangeInput.preset === 'last_quarter' || rangeInput.preset === 'this_year');
+
+	if (isMonthly) {
+		// Monthly aggregation → YYYY-MM
+		const rows = await db
+			.select({
+				day: sql<string>`to_char(date_trunc('month', ${omnisolSurveysSent.dateSent}::timestamptz), 'YYYY-MM')`,
+				count: sql<number>`count(*)`
+			})
+			.from(omnisolSurveysSent)
+			.where(rangePredicateISO(startISO, endISO))
+			.groupBy(sql`date_trunc('month', ${omnisolSurveysSent.dateSent}::timestamptz)`)
+			.orderBy(sql`date_trunc('month', ${omnisolSurveysSent.dateSent}::timestamptz) ASC`);
+
+		return rows.map((r) => ({ day: r.day, count: Number(r.count) || 0 }));
+	}
+
+	// Daily aggregation → YYYY-MM-DD
 	const rows = await db
 		.select({
 			day: sql<string>`to_char(date_trunc('day', ${omnisolSurveysSent.dateSent}::timestamptz), 'YYYY-MM-DD')`,
@@ -133,10 +153,7 @@ export async function getSurveysDailySeries(
 		.groupBy(sql`date_trunc('day', ${omnisolSurveysSent.dateSent}::timestamptz)`)
 		.orderBy(sql`date_trunc('day', ${omnisolSurveysSent.dateSent}::timestamptz) ASC`);
 
-	return rows.map((r) => ({
-		day: r.day,
-		count: Number(r.count) || 0
-	}));
+	return rows.map((r) => ({ day: r.day, count: Number(r.count) || 0 }));
 }
 
 // 4) One-call dashboard aggregate

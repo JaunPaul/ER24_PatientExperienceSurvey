@@ -1,5 +1,4 @@
 <script lang="ts">
-	import DateRangeSelect from '$lib/components/DateRangeSelect.svelte';
 	import { AppBar } from '@skeletonlabs/skeleton-svelte';
 	let { children } = $props();
 </script>
@@ -8,18 +7,8 @@
 	<AppBar class="backdrop-blur">
 		<AppBar.Toolbar class="grid-cols-[auto_1fr_auto]">
 			<AppBar.Lead>
-				<a href="/reports/pes/facility" class="btn preset-tonal">Facility</a>
-				<a href="/reports/pes/medical-care" class="btn preset-tonal">Medical care</a>
-				<a href="/reports/pes/staff" class="btn preset-tonal">Staff experience</a>
+				<a href="/reports/omnisol" class="btn preset-tonal">All</a>
 			</AppBar.Lead>
-			<AppBar.Trail>
-				<DateRangeSelect
-					options={[
-						{ value: 'last_7', label: 'Last 7 days' },
-						{ value: 'last_30', label: 'Last 30 days' }
-					]}
-				></DateRangeSelect>
-			</AppBar.Trail>
 		</AppBar.Toolbar>
 	</AppBar>
 </header>
