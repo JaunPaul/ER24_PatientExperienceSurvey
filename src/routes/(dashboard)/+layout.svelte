@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { navigating } from '$app/state';
 	import {
 		BookIcon,
 		HouseIcon,
@@ -66,7 +67,13 @@
 		</Navigation.Footer>
 	</Navigation>
 	<!-- --- -->
-	<div class="p-4">
+
+	<div class="relative p-4">
+		{#if navigating.to}
+			<div class="absolute z-10 flex h-screen w-full items-center justify-center bg-stone-900/75">
+				<p>Loading...</p>
+			</div>
+		{/if}
 		{@render children?.()}
 	</div>
 </div>

@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { navigating } from '$app/state';
+
 	type Card = {
 		label: string;
 		value: string;
