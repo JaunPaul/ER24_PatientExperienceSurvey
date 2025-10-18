@@ -32,10 +32,10 @@
 	>
 		<Navigation layout="sidebar" class="grid grid-rows-[auto_1fr_auto] gap-4">
 			<Navigation.Header>
-				<a href="https://www.skeleton.dev" class="btn-icon btn-icon-lg preset-filled-primary-500">
-					<SkullIcon class="size-6" />
-				</a>
-				<span>ER24</span>
+				<div class="flex items-center gap-3">
+					<img src="/er24-logo.jpeg" alt="Logo" class="w-20 rounded-md" />
+					<span class="font-medium">Emergency Rooms 24</span>
+				</div>
 			</Navigation.Header>
 			<Navigation.Content>
 				<Navigation.Group>

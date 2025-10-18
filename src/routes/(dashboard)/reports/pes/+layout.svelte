@@ -4,13 +4,17 @@
 	let { children } = $props();
 </script>
 
-<header class="sticky">
-	<AppBar class="backdrop-blur">
+<header class="sticky top-0 z-20">
+	<AppBar class="bg-surface-50-950/80 backdrop-blur">
 		<AppBar.Toolbar class="md:grid-cols-[auto_1fr_auto]">
 			<AppBar.Lead class="space-y-2">
-				<a href="/reports/pes/facility" class="btn preset-tonal">Facility</a>
-				<a href="/reports/pes/medical-care" class="btn preset-tonal">Medical care</a>
-				<a href="/reports/pes/staff" class="btn preset-tonal">Staff experience</a>
+				<a href="/reports/pes" class="btn preset-tonal text-xs md:text-sm">Summary</a>
+				<a href="/reports/pes/facility" class="btn preset-tonal text-xs md:text-sm">Facility</a>
+				<a href="/reports/pes/medical-care" class="btn preset-tonal text-xs md:text-sm"
+					>Medical care</a
+				>
+				<a href="/reports/pes/staff" class="btn preset-tonal text-xs md:text-sm">Staff experience</a
+				>
 			</AppBar.Lead>
 			<AppBar.Trail>
 				<DateRangeSelect

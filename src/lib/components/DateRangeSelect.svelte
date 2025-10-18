@@ -18,9 +18,9 @@
 	});
 </script>
 
-<form method="GET" class="ml-auto w-full max-w-xs space-y-4">
+<form method="GET" class="ml-auto w-full max-w-xs space-y-2 md:space-y-4">
 	<!-- Default -->
-	<select bind:value={selected} class="select">
+	<select bind:value={selected} class="select text-xs md:text-sm">
 		{#each options as { value, label }}
 			<option {value}>{label}</option>
 		{/each}
