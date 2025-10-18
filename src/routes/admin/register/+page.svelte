@@ -1,10 +1,11 @@
 <script lang="ts">
-	import { applyAction, enhance } from '$app/forms';
-	let { form } = $props();
-	let loading = $state(false);
+	import { enhance } from '$app/forms';
+	import type { ActionData } from './$types';
+
+	let { form }: { form: ActionData } = $props();
 </script>
 
-<!-- Login Page (Svelte + Tailwind/Skeleton) -->
+<h1>Register</h1>
 <div class="grid min-h-svh place-items-center p-4">
 	<!-- Container -->
 	<div class="w-full max-w-[440px]">
@@ -12,7 +13,7 @@
 		<div class="mb-6 flex items-center gap-3">
 			<div class="size-10 rounded-full bg-primary-500" aria-hidden="true" />
 			<div>
-				<h1 class="h4">Welcome back</h1>
+				<h1 class="h4">Register</h1>
 				<p class="text-sm opacity-60">Sign in to continue</p>
 			</div>
 		</div>
@@ -22,17 +23,11 @@
 			class="card border-[1px] border-surface-200-800 preset-filled-surface-100-900 p-6 shadow-xl"
 		>
 			<form
-				use:enhance={() => {
-					loading = true;
-					return async ({ result }) => {
-						loading = false;
-						await applyAction(result);
-					};
-				}}
 				method="POST"
-				action="?/login"
+				action="?/register"
 				class="space-y-4"
 				aria-label="Sign-in form"
+				use:enhance
 			>
 				<!-- Email -->
 				<label class="label">
@@ -46,21 +41,10 @@
 					<input class="input" type="password" name="password" placeholder="••••••••" required />
 				</label>
 
-				<!-- Extras -->
-				<div class="flex items-center justify-between">
-					<label class="flex items-center gap-2 select-none">
-						<input class="checkbox" type="checkbox" />
-						<span class="text-sm">Remember me</span>
-					</label>
-					<a href="#" class="anchor text-sm">Forgot password?</a>
-				</div>
-
 				<!-- Submit (UI only) -->
-				<button disabled={loading} type="submit" class="btn w-full preset-filled-primary-500"
-					>{loading ? 'Wait..' : 'Sign in'}</button
-				>
+				<button type="submit" class="btn w-full preset-filled-primary-500"> Register </button>
+				<p style="color: red">{form?.message ?? ''}</p>
 			</form>
-			<p style="color: red">{form?.message ?? ''}</p>
 		</div>
 
 		<!-- Meta -->

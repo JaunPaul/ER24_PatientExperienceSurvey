@@ -8,6 +8,13 @@
       "when": 1739449333833,
       "tag": "0000_slim_stellaris",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1760765309387,
+      "tag": "0001_last_emma_frost",
+      "breakpoints": true
     }
   ]
 }

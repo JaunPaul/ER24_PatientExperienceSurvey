@@ -1,5 +1,5 @@
 import { relations } from "drizzle-orm/relations";
-import { categories, questions, fieldTypes, surveys, responses, dropdownOptions, answers, questionsMap, directusUsers, directusNotifications, directusCollections, directusShares, directusRoles, directusFlows, directusFolders, directusFiles, directusPolicies, directusPermissions, directusActivity, directusRevisions, directusVersions, directusSessions, directusPresets, directusDashboards, directusPanels, directusOperations, directusAccess, directusComments, directusWebhooks, directusSettings, clinicalDepartmentDailyReport, dailyPatientReport, omnisolPatients, omnisolAddresses, omnisolAdmissions, omnisolVisitations, omnisolMedicalAid, omnisolPayments, omnisolReferrals, omnisolDiagnoses, omnisolSurveysSent } from "./schema";
+import { categories, questions, fieldTypes, surveys, responses, dropdownOptions, answers, questionsMap, directusUsers, directusNotifications, directusCollections, directusShares, directusRoles, directusFlows, directusFolders, directusFiles, directusPolicies, directusPermissions, directusActivity, directusRevisions, directusVersions, directusSessions, directusPresets, directusDashboards, directusPanels, directusOperations, directusAccess, directusComments, directusWebhooks, directusSettings, clinicalDepartmentDailyReport, dailyPatientReport, omnisolPatients, omnisolAddresses, omnisolAdmissions, omnisolVisitations, omnisolMedicalAid, omnisolPayments, omnisolReferrals, omnisolDiagnoses, omnisolSurveysSent, user, session } from "./schema";
 
 export const questionsRelations = relations(questions, ({one, many}) => ({
 	category: one(categories, {
@@ -605,4 +605,15 @@ export const omnisolSurveysSentRelations = relations(omnisolSurveysSent, ({one})
 		fields: [omnisolSurveysSent.responseId],
 		references: [responses.responseId]
 	}),
+}));
+
+export const sessionRelations = relations(session, ({one}) => ({
+	user: one(user, {
+		fields: [session.userId],
+		references: [user.id]
+	}),
+}));
+
+export const userRelations = relations(user, ({many}) => ({
+	sessions: many(session),
 }));

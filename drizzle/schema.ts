@@ -1,4 +1,4 @@
-import { pgTable, serial, varchar, timestamp, foreignKey, integer, text, index, uuid, boolean, unique, json, bigint, numeric, date, type AnyPgColumn, pgView } from "drizzle-orm/pg-core"
+import { pgTable, serial, varchar, timestamp, foreignKey, integer, text, index, uuid, boolean, unique, json, bigint, numeric, date, type AnyPgColumn, jsonb, pgView, doublePrecision } from "drizzle-orm/pg-core"
 import { sql } from "drizzle-orm"
 
 
@@ -1020,12 +1020,38 @@ export const omnisolWebhookResponses = pgTable("omnisol_webhook_responses", {
 	requestJson: json("request_json"),
 });
 
+export const n8NChatHistories = pgTable("n8n_chat_histories", {
+	id: serial().primaryKey().notNull(),
+	sessionId: varchar("session_id", { length: 255 }).notNull(),
+	message: jsonb().notNull(),
+});
+
 export const omnisolWebhookErrors = pgTable("omnisol_webhook_errors", {
 	id: serial().primaryKey().notNull(),
 	dateCreated: timestamp("date_created", { withTimezone: true, mode: 'string' }),
 	webhookId: uuid("webhook_id"),
 	webhookError: json("webhook_error"),
 });
+
+export const user = pgTable("user", {
+	id: text().primaryKey().notNull(),
+	username: text().notNull(),
+	passwordHash: text("password_hash").notNull(),
+}, (table) => [
+	unique("user_username_unique").on(table.username),
+]);
+
+export const session = pgTable("session", {
+	id: text().primaryKey().notNull(),
+	userId: text("user_id").notNull(),
+	expiresAt: timestamp("expires_at", { withTimezone: true, mode: 'string' }).notNull(),
+}, (table) => [
+	foreignKey({
+			columns: [table.userId],
+			foreignColumns: [user.id],
+			name: "session_user_id_user_id_fk"
+		}),
+]);
 export const dailyCategoryAverages = pgView("daily_category_averages", {	surveyId: integer("survey_id"),
 	categoryId: integer("category_id"),
 	categoryName: varchar("category_name", { length: 255 }),
@@ -1061,3 +1087,89 @@ export const dailyNpsAverages = pgView("daily_nps_averages", {	surveyId: integer
 	responseDate: date("response_date"),
 	averageNps: numeric("average_nps"),
 }).as(sql`SELECT r.survey_id, q.category_id, c.name AS category_name, date(r.created_at) AS response_date, avg(a.answer_rating) AS average_nps FROM responses r JOIN answers a ON r.response_id = a.response_id JOIN questions q ON a.question_id = q.question_id JOIN categories c ON q.category_id = c.id JOIN field_types ft ON q.field_type_id = ft.field_type_id WHERE ft.field_type_name::text = 'NPS'::text GROUP BY r.survey_id, q.category_id, c.name, (date(r.created_at)) ORDER BY (date(r.created_at))`);
+
+export const omnisolSurveysSentWithTimes = pgView("omnisol_surveys_sent_with_times", {	id: integer(),
+	patientId: varchar("patient_id", { length: 20 }),
+	responseId: integer("response_id"),
+	dateSent: timestamp("date_sent", { mode: 'string' }),
+	methodSent: varchar("method_sent", { length: 50 }),
+	surveyUrl: text("survey_url"),
+	opened: boolean(),
+	openedDate: timestamp("opened_date", { mode: 'string' }),
+	completed: boolean(),
+	completedDate: timestamp("completed_date", { mode: 'string' }),
+	timeToOpenDays: integer("time_to_open_days"),
+	timeToCompleteDays: integer("time_to_complete_days"),
+}).as(sql`SELECT id, patient_id, response_id, date_sent, method_sent, survey_url, opened, opened_date, completed, completed_date, CASE WHEN opened = true AND opened_date IS NOT NULL AND date_sent IS NOT NULL THEN EXTRACT(day FROM opened_date - date_sent)::integer ELSE NULL::integer END AS time_to_open_days, CASE WHEN completed = true AND completed_date IS NOT NULL AND date_sent IS NOT NULL THEN EXTRACT(day FROM completed_date - date_sent)::integer ELSE NULL::integer END AS time_to_complete_days FROM omnisol_surveys_sent`);
+
+export const pgStatStatements = pgView("pg_stat_statements", {	// TODO: failed to parse database type 'oid'
+	userid: unknown("userid"),
+	// TODO: failed to parse database type 'oid'
+	dbid: unknown("dbid"),
+	toplevel: boolean(),
+	// You can use { mode: "bigint" } if numbers are exceeding js number limitations
+	queryid: bigint({ mode: "number" }),
+	query: text(),
+	// You can use { mode: "bigint" } if numbers are exceeding js number limitations
+	plans: bigint({ mode: "number" }),
+	totalPlanTime: doublePrecision("total_plan_time"),
+	minPlanTime: doublePrecision("min_plan_time"),
+	maxPlanTime: doublePrecision("max_plan_time"),
+	meanPlanTime: doublePrecision("mean_plan_time"),
+	stddevPlanTime: doublePrecision("stddev_plan_time"),
+	// You can use { mode: "bigint" } if numbers are exceeding js number limitations
+	calls: bigint({ mode: "number" }),
+	totalExecTime: doublePrecision("total_exec_time"),
+	minExecTime: doublePrecision("min_exec_time"),
+	maxExecTime: doublePrecision("max_exec_time"),
+	meanExecTime: doublePrecision("mean_exec_time"),
+	stddevExecTime: doublePrecision("stddev_exec_time"),
+	// You can use { mode: "bigint" } if numbers are exceeding js number limitations
+	rows: bigint({ mode: "number" }),
+	// You can use { mode: "bigint" } if numbers are exceeding js number limitations
+	sharedBlksHit: bigint("shared_blks_hit", { mode: "number" }),
+	// You can use { mode: "bigint" } if numbers are exceeding js number limitations
+	sharedBlksRead: bigint("shared_blks_read", { mode: "number" }),
+	// You can use { mode: "bigint" } if numbers are exceeding js number limitations
+	sharedBlksDirtied: bigint("shared_blks_dirtied", { mode: "number" }),
+	// You can use { mode: "bigint" } if numbers are exceeding js number limitations
+	sharedBlksWritten: bigint("shared_blks_written", { mode: "number" }),
+	// You can use { mode: "bigint" } if numbers are exceeding js number limitations
+	localBlksHit: bigint("local_blks_hit", { mode: "number" }),
+	// You can use { mode: "bigint" } if numbers are exceeding js number limitations
+	localBlksRead: bigint("local_blks_read", { mode: "number" }),
+	// You can use { mode: "bigint" } if numbers are exceeding js number limitations
+	localBlksDirtied: bigint("local_blks_dirtied", { mode: "number" }),
+	// You can use { mode: "bigint" } if numbers are exceeding js number limitations
+	localBlksWritten: bigint("local_blks_written", { mode: "number" }),
+	// You can use { mode: "bigint" } if numbers are exceeding js number limitations
+	tempBlksRead: bigint("temp_blks_read", { mode: "number" }),
+	// You can use { mode: "bigint" } if numbers are exceeding js number limitations
+	tempBlksWritten: bigint("temp_blks_written", { mode: "number" }),
+	blkReadTime: doublePrecision("blk_read_time"),
+	blkWriteTime: doublePrecision("blk_write_time"),
+	tempBlkReadTime: doublePrecision("temp_blk_read_time"),
+	tempBlkWriteTime: doublePrecision("temp_blk_write_time"),
+	// You can use { mode: "bigint" } if numbers are exceeding js number limitations
+	walRecords: bigint("wal_records", { mode: "number" }),
+	// You can use { mode: "bigint" } if numbers are exceeding js number limitations
+	walFpi: bigint("wal_fpi", { mode: "number" }),
+	walBytes: numeric("wal_bytes"),
+	// You can use { mode: "bigint" } if numbers are exceeding js number limitations
+	jitFunctions: bigint("jit_functions", { mode: "number" }),
+	jitGenerationTime: doublePrecision("jit_generation_time"),
+	// You can use { mode: "bigint" } if numbers are exceeding js number limitations
+	jitInliningCount: bigint("jit_inlining_count", { mode: "number" }),
+	jitInliningTime: doublePrecision("jit_inlining_time"),
+	// You can use { mode: "bigint" } if numbers are exceeding js number limitations
+	jitOptimizationCount: bigint("jit_optimization_count", { mode: "number" }),
+	jitOptimizationTime: doublePrecision("jit_optimization_time"),
+	// You can use { mode: "bigint" } if numbers are exceeding js number limitations
+	jitEmissionCount: bigint("jit_emission_count", { mode: "number" }),
+	jitEmissionTime: doublePrecision("jit_emission_time"),
+}).as(sql`SELECT userid, dbid, toplevel, queryid, query, plans, total_plan_time, min_plan_time, max_plan_time, mean_plan_time, stddev_plan_time, calls, total_exec_time, min_exec_time, max_exec_time, mean_exec_time, stddev_exec_time, rows, shared_blks_hit, shared_blks_read, shared_blks_dirtied, shared_blks_written, local_blks_hit, local_blks_read, local_blks_dirtied, local_blks_written, temp_blks_read, temp_blks_written, blk_read_time, blk_write_time, temp_blk_read_time, temp_blk_write_time, wal_records, wal_fpi, wal_bytes, jit_functions, jit_generation_time, jit_inlining_count, jit_inlining_time, jit_optimization_count, jit_optimization_time, jit_emission_count, jit_emission_time FROM pg_stat_statements(true) pg_stat_statements(userid, dbid, toplevel, queryid, query, plans, total_plan_time, min_plan_time, max_plan_time, mean_plan_time, stddev_plan_time, calls, total_exec_time, min_exec_time, max_exec_time, mean_exec_time, stddev_exec_time, rows, shared_blks_hit, shared_blks_read, shared_blks_dirtied, shared_blks_written, local_blks_hit, local_blks_read, local_blks_dirtied, local_blks_written, temp_blks_read, temp_blks_written, blk_read_time, blk_write_time, temp_blk_read_time, temp_blk_write_time, wal_records, wal_fpi, wal_bytes, jit_functions, jit_generation_time, jit_inlining_count, jit_inlining_time, jit_optimization_count, jit_optimization_time, jit_emission_count, jit_emission_time)`);
+
+export const pgStatStatementsInfo = pgView("pg_stat_statements_info", {	// You can use { mode: "bigint" } if numbers are exceeding js number limitations
+	dealloc: bigint({ mode: "number" }),
+	statsReset: timestamp("stats_reset", { withTimezone: true, mode: 'string' }),
+}).as(sql`SELECT dealloc, stats_reset FROM pg_stat_statements_info() pg_stat_statements_info(dealloc, stats_reset)`);

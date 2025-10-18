@@ -15,9 +15,10 @@ import {
 	numeric,
 	date,
 	type AnyPgColumn,
-	pgView
+	jsonb,
+	pgView,
+	doublePrecision
 } from 'drizzle-orm/pg-core';
-
 import { sql } from 'drizzle-orm';
 
 export const surveys = pgTable('surveys', {
@@ -1210,12 +1211,47 @@ export const omnisolWebhookResponses = pgTable('omnisol_webhook_responses', {
 	requestJson: json('request_json')
 });
 
+export const n8NChatHistories = pgTable('n8n_chat_histories', {
+	id: serial().primaryKey().notNull(),
+	sessionId: varchar('session_id', { length: 255 }).notNull(),
+	message: jsonb().notNull()
+});
+
 export const omnisolWebhookErrors = pgTable('omnisol_webhook_errors', {
 	id: serial().primaryKey().notNull(),
 	dateCreated: timestamp('date_created', { withTimezone: true, mode: 'string' }),
 	webhookId: uuid('webhook_id'),
 	webhookError: json('webhook_error')
 });
+
+export const user = pgTable(
+	'user',
+	{
+		id: text().primaryKey().notNull(),
+		username: text().notNull(),
+		passwordHash: text('password_hash').notNull()
+	},
+	(table) => [unique('user_username_unique').on(table.username)]
+);
+
+export const session = pgTable(
+	'session',
+	{
+		id: text().primaryKey().notNull(),
+		userId: text('user_id').notNull(),
+		expiresAt: timestamp('expires_at', { withTimezone: true, mode: 'date' }).notNull()
+	},
+	(table) => [
+		foreignKey({
+			columns: [table.userId],
+			foreignColumns: [user.id],
+			name: 'session_user_id_user_id_fk'
+		})
+	]
+);
+
+export type Session = typeof session.$inferSelect;
+export type User = typeof user.$inferSelect;
 
 export const dailyCategoryAverages = pgView('daily_category_averages', {
 	surveyId: integer('survey_id'),
@@ -1265,20 +1301,19 @@ export const dailyNpsAverages = pgView('daily_nps_averages', {
 	sql`SELECT r.survey_id, q.category_id, c.name AS category_name, date(r.created_at) AS response_date, avg(a.answer_rating) AS average_nps FROM responses r JOIN answers a ON r.response_id = a.response_id JOIN questions q ON a.question_id = q.question_id JOIN categories c ON q.category_id = c.id JOIN field_types ft ON q.field_type_id = ft.field_type_id WHERE ft.field_type_name::text = 'NPS'::text GROUP BY r.survey_id, q.category_id, c.name, (date(r.created_at)) ORDER BY (date(r.created_at))`
 );
 
-export const user = pgTable('user', {
-	id: text('id').primaryKey(),
-	username: text('username').notNull().unique(),
-	passwordHash: text('password_hash').notNull()
-});
-
-export const session = pgTable('session', {
-	id: text('id').primaryKey(),
-	userId: text('user_id')
-		.notNull()
-		.references(() => user.id),
-	expiresAt: timestamp('expires_at', { withTimezone: true, mode: 'date' }).notNull()
-});
-
-export type Session = typeof session.$inferSelect;
-
-export type User = typeof user.$inferSelect;
+export const omnisolSurveysSentWithTimes = pgView('omnisol_surveys_sent_with_times', {
+	id: integer(),
+	patientId: varchar('patient_id', { length: 20 }),
+	responseId: integer('response_id'),
+	dateSent: timestamp('date_sent', { mode: 'string' }),
+	methodSent: varchar('method_sent', { length: 50 }),
+	surveyUrl: text('survey_url'),
+	opened: boolean(),
+	openedDate: timestamp('opened_date', { mode: 'string' }),
+	completed: boolean(),
+	completedDate: timestamp('completed_date', { mode: 'string' }),
+	timeToOpenDays: integer('time_to_open_days'),
+	timeToCompleteDays: integer('time_to_complete_days')
+}).as(
+	sql`SELECT id, patient_id, response_id, date_sent, method_sent, survey_url, opened, opened_date, completed, completed_date, CASE WHEN opened = true AND opened_date IS NOT NULL AND date_sent IS NOT NULL THEN EXTRACT(day FROM opened_date - date_sent)::integer ELSE NULL::integer END AS time_to_open_days, CASE WHEN completed = true AND completed_date IS NOT NULL AND date_sent IS NOT NULL THEN EXTRACT(day FROM completed_date - date_sent)::integer ELSE NULL::integer END AS time_to_complete_days FROM omnisol_surveys_sent`
+);
