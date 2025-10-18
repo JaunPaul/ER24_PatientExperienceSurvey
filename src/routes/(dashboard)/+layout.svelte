@@ -23,7 +23,7 @@
 
 	let anchorSidebar = 'btn hover:preset-tonal justify-start px-2 w-full';
 	let anchorBar = 'btn hover:preset-tonal flex-col items-center gap-1';
-	const large = new MediaQuery('min-width: 400px');
+	const large = new MediaQuery('min-width: 500px');
 </script>
 
 {#if large.current}
