@@ -17,6 +17,7 @@ import {
 	type AnyPgColumn,
 	pgView
 } from 'drizzle-orm/pg-core';
+
 import { sql } from 'drizzle-orm';
 
 export const surveys = pgTable('surveys', {
@@ -1215,6 +1216,7 @@ export const omnisolWebhookErrors = pgTable('omnisol_webhook_errors', {
 	webhookId: uuid('webhook_id'),
 	webhookError: json('webhook_error')
 });
+
 export const dailyCategoryAverages = pgView('daily_category_averages', {
 	surveyId: integer('survey_id'),
 	categoryId: integer('category_id'),
@@ -1262,3 +1264,21 @@ export const dailyNpsAverages = pgView('daily_nps_averages', {
 }).as(
 	sql`SELECT r.survey_id, q.category_id, c.name AS category_name, date(r.created_at) AS response_date, avg(a.answer_rating) AS average_nps FROM responses r JOIN answers a ON r.response_id = a.response_id JOIN questions q ON a.question_id = q.question_id JOIN categories c ON q.category_id = c.id JOIN field_types ft ON q.field_type_id = ft.field_type_id WHERE ft.field_type_name::text = 'NPS'::text GROUP BY r.survey_id, q.category_id, c.name, (date(r.created_at)) ORDER BY (date(r.created_at))`
 );
+
+export const user = pgTable('user', {
+	id: text('id').primaryKey(),
+	username: text('username').notNull().unique(),
+	passwordHash: text('password_hash').notNull()
+});
+
+export const session = pgTable('session', {
+	id: text('id').primaryKey(),
+	userId: text('user_id')
+		.notNull()
+		.references(() => user.id),
+	expiresAt: timestamp('expires_at', { withTimezone: true, mode: 'date' }).notNull()
+});
+
+export type Session = typeof session.$inferSelect;
+
+export type User = typeof user.$inferSelect;
