@@ -77,25 +77,18 @@
 			</Navigation.Footer>
 		</Navigation>
 		<div class="relative p-4">
-			{#if navigating.to}
-				<div class="absolute z-10 flex h-screen w-full items-center justify-center bg-stone-900/75">
-					<p>Loading...</p>
-				</div>
-			{/if}
 			{@render children?.()}
 		</div>
 	</div>
 {:else}
 	<div class="grid grid-rows-[1fr_auto]">
 		<div class="relative p-4 pb-20">
-			{#if navigating.to}
-				<div class="absolute z-10 flex h-screen w-full items-center justify-center bg-stone-900/75">
-					<p>Loading...</p>
-				</div>
-			{/if}
 			{@render children?.()}
 		</div>
-		<Navigation layout="bar" class="fixed bottom-0 z-10 mt-auto w-screen">
+		<Navigation
+			layout="bar"
+			class="fixed bottom-0 z-10 mt-auto w-screen bg-surface-950 text-surface-50"
+		>
 			<Navigation.Content>
 				<Navigation.Group>
 					<Navigation.Menu class="grid grid-cols-4 gap-2">
