@@ -21,16 +21,17 @@
 		]
 	};
 
-	let anchorSidebar = 'btn hover:preset-tonal justify-start px-2 w-full';
-	let anchorBar = 'btn hover:preset-tonal flex-col items-center gap-1';
+	let anchorSidebar = 'btn hover:preset-tonal-primary justify-start px-2 w-full ';
+	let anchorBar = 'btn hover:preset-tonal-primary flex-col items-center gap-1';
 	const large = new MediaQuery('min-width: 500px');
 </script>
 
 {#if large.current}
-	<div
-		class="grid h-[728px] w-full grid-cols-[auto_1fr] items-stretch border border-surface-200-800"
-	>
-		<Navigation layout="sidebar" class="grid grid-rows-[auto_1fr_auto] gap-4">
+	<div class=" grid h-[728px] w-full grid-cols-[auto_1fr] items-stretch">
+		<Navigation
+			layout="sidebar"
+			class="grid grid-rows-[auto_1fr_auto] gap-4 bg-surface-950 text-surface-50"
+		>
 			<Navigation.Header>
 				<div class="flex items-center gap-3">
 					<img src="/er24-logo.jpeg" alt="Logo" class="w-20 rounded-md" />
@@ -48,7 +49,9 @@
 				</Navigation.Group>
 				{#each Object.entries(linksSidebar) as [category, links]}
 					<Navigation.Group>
-						<Navigation.Label class="pl-2 capitalize">{category}</Navigation.Label>
+						<Navigation.Label class="pl-2 text-primary-50 capitalize opacity-50"
+							>{category}</Navigation.Label
+						>
 						<Navigation.Menu>
 							{#each links as link (link)}
 								{@const Icon = link.icon}
@@ -83,7 +86,7 @@
 		</div>
 	</div>
 {:else}
-	<div class="grid grid-rows-[1fr_auto] border border-surface-200-800">
+	<div class="grid grid-rows-[1fr_auto]">
 		<div class="relative p-4 pb-20">
 			{#if navigating.to}
 				<div class="absolute z-10 flex h-screen w-full items-center justify-center bg-stone-900/75">

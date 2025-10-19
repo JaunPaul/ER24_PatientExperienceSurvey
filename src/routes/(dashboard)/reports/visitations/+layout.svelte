@@ -5,12 +5,15 @@
 </script>
 
 <header class="sticky top-0 z-20">
-	<AppBar class="bg-surface-50-950/80 backdrop-blur">
+	<AppBar class="bg-surface-50-950/70 backdrop-blur">
 		<AppBar.Toolbar class="md:grid-cols-[auto_1fr_auto]">
 			<AppBar.Lead class="space-y-2">
-				<a href="/reports/visitations" class="btn preset-tonal text-xs md:text-sm">Visitations</a>
-				<a href="/reports/visitations/payments" class="btn preset-tonal text-xs md:text-sm"
-					>Payments</a
+				<a href="/reports/visitations" class="btn preset-filled-primary-500 text-xs md:text-sm"
+					>Visitations</a
+				>
+				<a
+					href="/reports/visitations/payments"
+					class="btn preset-filled-primary-500 text-xs md:text-sm">Payments</a
 				>
 			</AppBar.Lead>
 			<AppBar.Trail>
@@ -29,7 +32,7 @@
 </header>
 
 <div class="py-4">
-	<div class="space-y-3 card preset-filled-surface-100-900 p-4">
+	<div class="space-y-3 card border border-surface-300-700 preset-tonal p-4">
 		<h3 class="h5">Visitations &amp; Payments</h3>
 		<div class="prose max-w-none text-sm opacity-80">
 			<p>

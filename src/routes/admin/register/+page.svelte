@@ -5,7 +5,6 @@
 	let { form }: { form: ActionData } = $props();
 </script>
 
-<h1>Register</h1>
 <div class="grid min-h-svh place-items-center p-4">
 	<!-- Container -->
 	<div class="w-full max-w-[440px]">
@@ -19,9 +18,7 @@
 		</div>
 
 		<!-- Card -->
-		<div
-			class="card border-[1px] border-surface-200-800 preset-filled-surface-100-900 p-6 shadow-xl"
-		>
+		<div class="preset-filled-500 card border-[1px] border-primary-200-800 p-6 shadow-xl">
 			<form
 				method="POST"
 				action="?/register"
@@ -32,13 +29,25 @@
 				<!-- Email -->
 				<label class="label">
 					<span class="label-text">Username</span>
-					<input class="input" type="text" name="username" placeholder="username" required />
+					<input
+						class="input bg-surface-50"
+						type="text"
+						name="username"
+						placeholder="username"
+						required
+					/>
 				</label>
 
 				<!-- Password -->
 				<label class="label">
 					<span class="label-text">Password</span>
-					<input class="input" type="password" name="password" placeholder="••••••••" required />
+					<input
+						class="input bg-surface-50"
+						type="password"
+						name="password"
+						placeholder="••••••••"
+						required
+					/>
 				</label>
 
 				<!-- Submit (UI only) -->

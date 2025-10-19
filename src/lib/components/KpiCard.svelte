@@ -17,15 +17,15 @@
 </script>
 
 <div
-	class="block divide-y divide-surface-200-800 overflow-hidden card border-[1px] border-surface-200-800 {data.variant ===
+	class="block divide-y divide-primary-200-800 overflow-hidden card border-[1px] border-primary-200-800 {data.variant ===
 	'ghost'
-		? 'preset-tonal'
-		: 'preset-filled-surface-100-900'} card-hover"
+		? 'rounded-none preset-filled-primary-900-100'
+		: 'preset-outlined-primary-50-950'} card-hover"
 >
 	<article class="space-y-4 p-4">
 		<div>
-			<h2 class="h6">{data.label}</h2>
-			<h3 class="h2">{data.value}</h3>
+			<h2 class="h6 font-normal">{data.label}</h2>
+			<h3 class="h2 {data.variant === 'ghost' ? '' : 'text-primary-500'}">{data.value}</h3>
 		</div>
 		{#if data.detail}
 			<p class="opacity-60">

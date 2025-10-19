@@ -5,15 +5,18 @@
 </script>
 
 <header class="sticky top-0 z-20">
-	<AppBar class="bg-surface-50-950/80 backdrop-blur">
+	<AppBar class="bg-surface-50-950/70 backdrop-blur">
 		<AppBar.Toolbar class="md:grid-cols-[auto_1fr_auto]">
 			<AppBar.Lead class="space-y-2">
-				<a href="/reports/pes" class="btn preset-tonal text-xs md:text-sm">Summary</a>
-				<a href="/reports/pes/facility" class="btn preset-tonal text-xs md:text-sm">Facility</a>
-				<a href="/reports/pes/medical-care" class="btn preset-tonal text-xs md:text-sm"
+				<a href="/reports/pes" class="btn preset-filled-primary-500 text-xs md:text-sm">Summary</a>
+				<a href="/reports/pes/facility" class="btn preset-filled-primary-500 text-xs md:text-sm"
+					>Facility</a
+				>
+				<a href="/reports/pes/medical-care" class="btn preset-filled-primary-500 text-xs md:text-sm"
 					>Medical care</a
 				>
-				<a href="/reports/pes/staff" class="btn preset-tonal text-xs md:text-sm">Staff experience</a
+				<a href="/reports/pes/staff" class="btn preset-filled-primary-500 text-xs md:text-sm"
+					>Staff experience</a
 				>
 			</AppBar.Lead>
 			<AppBar.Trail>

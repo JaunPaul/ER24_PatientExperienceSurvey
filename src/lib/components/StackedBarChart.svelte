@@ -32,11 +32,11 @@
 </script>
 
 <div
-	class="block divide-y divide-surface-200-800 overflow-hidden card border-[1px] border-surface-200-800 preset-filled-surface-100-900 card-hover"
+	class="block divide-y divide-surface-200-800 overflow-hidden card border-[1px] preset-outlined-surface-500 border-surface-200-800 text-surface-950-50 card-hover"
 >
 	<article class="space-y-4 p-4">
 		<div>
-			<h2 class="h6">{title}</h2>
+			<h2 class="h6 font-normal">{title}</h2>
 		</div>
 		<canvas bind:this={canvas} class="min-h-md h-full w-full"></canvas>
 	</article>

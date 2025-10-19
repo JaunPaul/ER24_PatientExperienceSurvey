@@ -37,13 +37,25 @@
 				<!-- Email -->
 				<label class="label">
 					<span class="label-text">Username</span>
-					<input class="input" type="text" name="username" placeholder="username" required />
+					<input
+						class="input bg-surface-50"
+						type="text"
+						name="username"
+						placeholder="username"
+						required
+					/>
 				</label>
 
 				<!-- Password -->
 				<label class="label">
 					<span class="label-text">Password</span>
-					<input class="input" type="password" name="password" placeholder="••••••••" required />
+					<input
+						class="input bg-surface-50"
+						type="password"
+						name="password"
+						placeholder="••••••••"
+						required
+					/>
 				</label>
 
 				<!-- Extras -->
