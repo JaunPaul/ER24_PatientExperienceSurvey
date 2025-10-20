@@ -18,6 +18,9 @@
 				<a href="/reports/pes/staff" class="btn preset-filled-primary-500 text-xs md:text-sm"
 					>Staff experience</a
 				>
+				<a href="/reports/pes/comments" class="btn preset-filled-primary-500 text-xs md:text-sm"
+					>Comments</a
+				>
 			</AppBar.Lead>
 			<AppBar.Trail>
 				<DateRangeSelect
