@@ -24,8 +24,16 @@
 				<tbody class="[&>tr]:hover:preset-tonal-primary">
 					{#each data.vm.table.rows as r}
 						<tr>
-							{#each Object.entries(r) as [, val]}
-								<td>{val}</td>
+							{#each Object.entries(r) as [key, val]}
+								{#if key === 'Id'}
+									<td>
+										<a href="/reports/pes/response/{val}" class="btn preset-filled-primary-500"
+											>{val}</a
+										>
+									</td>
+								{:else}
+									<td>{val}</td>
+								{/if}
 							{/each}
 						</tr>
 					{/each}

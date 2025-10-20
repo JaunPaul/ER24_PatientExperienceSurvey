@@ -14,3 +14,12 @@ export async function getSurveyResponseFlatComments(): Promise<Partial<SurveyRes
 		.where(and(eq(surveyResponseFlat.surveyId, 3), eq(surveyResponseFlat.fieldTypeName, 'Comment')))
 		.orderBy(desc(surveyResponseFlat.responseDate));
 }
+
+export async function getSurveyResponseFlatByResponseId(
+	responseId: string
+): Promise<SurveyResponseFlatType[]> {
+	return await db
+		.select()
+		.from(surveyResponseFlat)
+		.where(eq(surveyResponseFlat.responseId, responseId));
+}

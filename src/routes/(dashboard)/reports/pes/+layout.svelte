@@ -9,7 +9,7 @@
 		<AppBar.Toolbar class="md:grid-cols-[auto_1fr_auto]">
 			<AppBar.Lead class="space-y-2">
 				<a href="/reports/pes" class="btn preset-filled-primary-500 text-xs md:text-sm">Summary</a>
-				<a href="/reports/pes/facility" class="btn preset-filled-primary-500 text-xs md:text-sm"
+				<!--<a href="/reports/pes/facility" class="btn preset-filled-primary-500 text-xs md:text-sm"
 					>Facility</a
 				>
 				<a href="/reports/pes/medical-care" class="btn preset-filled-primary-500 text-xs md:text-sm"
@@ -17,7 +17,7 @@
 				>
 				<a href="/reports/pes/staff" class="btn preset-filled-primary-500 text-xs md:text-sm"
 					>Staff experience</a
-				>
+				>-->
 				<a href="/reports/pes/comments" class="btn preset-filled-primary-500 text-xs md:text-sm"
 					>Comments</a
 				>
