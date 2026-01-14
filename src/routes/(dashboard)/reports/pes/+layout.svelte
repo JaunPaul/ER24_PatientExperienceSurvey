@@ -21,6 +21,9 @@
 				<a href="/reports/pes/comments" class="btn preset-filled-primary-500 text-xs md:text-sm"
 					>Comments</a
 				>
+				<a href="/reports/pes/questions" class="btn preset-filled-primary-500 text-xs md:text-sm"
+					>Questions</a
+				>
 			</AppBar.Lead>
 			<AppBar.Trail>
 				<DateRangeSelect
